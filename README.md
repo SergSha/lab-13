@@ -7,6 +7,7 @@ otus | hashicorp vault
 #### Цель:
 развернуть кластер веб приложения через nomad;
 там же развернуть vault кластер и реализовать обновления паролей к БД через каждые 2 минуты.
+
 https://github.com/erlong15/otus-vault/blob/main/k8s-materials/04-Vault/00-Homework.md
 
 #### Критерии оценки:
