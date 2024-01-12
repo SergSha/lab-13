@@ -25,11 +25,20 @@
 
 ## Инсталляция hashicorp vault  HA в k8s
 
-* склонируем репозиторий consul (необходимо минимум 3 ноды)
+ * склонируем репозиторий consul (необходимо минимум 3 ноды)
 
  ```bash
  git clone https://github.com/hashicorp/consul-helm.git
- helm install consul consul-helm
+ ```
+
+ * Так как немного устарело, поэтому в файле ./consul-helm/templates/server-disruptionbudget.yaml подредактировал строку
+
+ ```yaml
+ apiVersion: policy/v1
+ ```
+
+ ```bash
+ helm install consul ./consul-helm
  ```
  
  * склонируем репозиторий vault
@@ -714,7 +723,7 @@ command terminated with exit code 2
 ##  Включим авторизацию черерз k8s
 ```bash
 kubectl exec -it vault-0 -- vault auth enable kubernetes
-kubectl exec -it vault-0 --  vault auth list
+kubectl exec -it vault-0 -- vault auth list
 ```
 
 ```
