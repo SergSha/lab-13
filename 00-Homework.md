@@ -56,6 +56,8 @@
   ....
   ha:
     enabled: true
+    raft:
+      enabled: true
   ...
 ui:
   enabled: true
@@ -191,17 +193,21 @@ Administrative Namespace:
 ```kubectl exec -it vault-0 -- vault operator init --key-shares=1 --key-threshold=1```
 
 ```
-[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator init --key-shares=1 --key-threshold=1
-Unseal Key 1: F6KsHvN7Gc4BQnA+++GQ/HCzilfCtsJn6YbYAmBQv5s=
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3
+Unseal Key 1: N8ZVIXld25WviRoLUZp+IeutwBFV3sgD8H+LRhxnJVbe
+Unseal Key 2: Hw83M4i+wCkbUsXrizvKM5NP9bHUb9Px04vuHVadYmUZ
+Unseal Key 3: 3vF+dmsIQqLJzKkwPgiXgKp0x9RF51dJt1xNNHbIWpkV
+Unseal Key 4: mbFJZmzrLjw6lhY1asKVJaklBGlLSZUBqtx67W42q0TR
+Unseal Key 5: u3LuFcH+jRMmwjui8N8wXV4/2nzTx3gm7ckIbowS7Dpk
 
-Initial Root Token: hvs.ckAMilH493UGx7W6qOAT8kx0
+Initial Root Token: hvs.oen1aEGBLNV3VdnBqQwRwXQY
 
-Vault initialized with 1 key shares and a key threshold of 1. Please securely
+Vault initialized with 5 key shares and a key threshold of 3. Please securely
 distribute the key shares printed above. When the Vault is re-sealed,
-restarted, or stopped, you must supply at least 1 of these keys to unseal it
+restarted, or stopped, you must supply at least 3 of these keys to unseal it
 before it can start servicing requests.
 
-Vault does not store the generated root key. Without at least 1 keys to
+Vault does not store the generated root key. Without at least 3 keys to
 reconstruct the root key, Vault will remain permanently sealed!
 
 It is possible to generate new unseal keys, provided you have a quorum of
@@ -211,9 +217,13 @@ existing unseal keys shares. See "vault operator rekey" for more information.
 
 * сохраните ключи, полученные при инициализации
 ```
-Unseal Key 1: qpt7e1w2D2tQqPdknR8A5VFrzFZ0Yz6W/BPoFMX5x2A=
+Unseal Key 1: N8ZVIXld25WviRoLUZp+IeutwBFV3sgD8H+LRhxnJVbe
+Unseal Key 2: Hw83M4i+wCkbUsXrizvKM5NP9bHUb9Px04vuHVadYmUZ
+Unseal Key 3: 3vF+dmsIQqLJzKkwPgiXgKp0x9RF51dJt1xNNHbIWpkV
+Unseal Key 4: mbFJZmzrLjw6lhY1asKVJaklBGlLSZUBqtx67W42q0TR
+Unseal Key 5: u3LuFcH+jRMmwjui8N8wXV4/2nzTx3gm7ckIbowS7Dpk
 
-Initial Root Token: s.KZmV3wbjEJabNtcwJWIlOfSj
+Initial Root Token: hvs.oen1aEGBLNV3VdnBqQwRwXQY
 ```
 * вывод добавьте в README.md
 
@@ -231,263 +241,143 @@ Initial Root Token: s.KZmV3wbjEJabNtcwJWIlOfSj
 ==> Vault server configuration:
 
 Administrative Namespace: 
-             Api Address: http://10.244.0.4:8200
+             Api Address: http://10.112.128.15:8200
                      Cgo: disabled
          Cluster Address: https://vault-0.vault-internal:8201
-   Environment Variables: GODEBUG, HOME, HOSTNAME, HOST_IP, KUBERNETES_PORT, KUBERNETES_PORT_443_TCP, KUBERNETES_PORT_443_TCP_ADDR, KUBERNETES_PORT_443_TCP_PORT, KUBERNETES_PORT_443_TCP_PROTO, KUBERNETES_SERVICE_HOST, KUBERNETES_SERVICE_PORT, KUBERNETES_SERVICE_PORT_HTTPS, NAME, PATH, POD_IP, PWD, SHLVL, SKIP_CHOWN, SKIP_SETCAP, VAULT_ADDR, VAULT_AGENT_INJECTOR_SVC_PORT, VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP, VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_ADDR, VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PORT, VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PROTO, VAULT_AGENT_INJECTOR_SVC_SERVICE_HOST, VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT, VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT_HTTPS, VAULT_API_ADDR, VAULT_CLUSTER_ADDR, VAULT_K8S_NAMESPACE, VAULT_K8S_POD_NAME, VAULT_PORT, VAULT_PORT_8200_TCP, VAULT_PORT_8200_TCP_ADDR, VAULT_PORT_8200_TCP_PORT, VAULT_PORT_8200_TCP_PROTO, VAULT_PORT_8201_TCP, VAULT_PORT_8201_TCP_ADDR, VAULT_PORT_8201_TCP_PORT, VAULT_PORT_8201_TCP_PROTO, VAULT_SERVICE_HOST, VAULT_SERVICE_PORT, VAULT_SERVICE_PORT_HTTP, VAULT_SERVICE_PORT_HTTPS_INTERNAL, VERSION
+   Environment Variables: CONSUL_CONSUL_DNS_PORT, CONSUL_CONSUL_DNS_PORT_53_TCP, CONSUL_CONSUL_DNS_PORT_53_TCP_ADDR, CONSUL_CONSUL_DNS_PORT_53_TCP_PORT, CONSUL_CONSUL_DNS_PORT_53_TCP_PROTO, CONSUL_CONSUL_DNS_PORT_53_UDP, CONSUL_CONSUL_DNS_PORT_53_UDP_ADDR, CONSUL_CONSUL_DNS_PORT_53_UDP_PORT, CONSUL_CONSUL_DNS_PORT_53_UDP_PROTO, CONSUL_CONSUL_DNS_SERVICE_HOST, CONSUL_CONSUL_DNS_SERVICE_PORT, CONSUL_CONSUL_DNS_SERVICE_PORT_DNS_TCP, CONSUL_CONSUL_DNS_SERVICE_PORT_DNS_UDP, CONSUL_CONSUL_UI_PORT, CONSUL_CONSUL_UI_PORT_80_TCP, CONSUL_CONSUL_UI_PORT_80_TCP_ADDR, CONSUL_CONSUL_UI_PORT_80_TCP_PORT, CONSUL_CONSUL_UI_PORT_80_TCP_PROTO, CONSUL_CONSUL_UI_SERVICE_HOST, CONSUL_CONSUL_UI_SERVICE_PORT, CONSUL_CONSUL_UI_SERVICE_PORT_HTTP, GODEBUG, HOME, HOSTNAME, HOST_IP, KUBERNETES_PORT, KUBERNETES_PORT_443_TCP, KUBERNETES_PORT_443_TCP_ADDR, KUBERNETES_PORT_443_TCP_PORT, KUBERNETES_PORT_443_TCP_PROTO, KUBERNETES_SERVICE_HOST, KUBERNETES_SERVICE_PORT, KUBERNETES_SERVICE_PORT_HTTPS, NAME, PATH, POD_IP, PWD, SHLVL, SKIP_CHOWN, SKIP_SETCAP, VAULT_ACTIVE_PORT, VAULT_ACTIVE_PORT_8200_TCP, VAULT_ACTIVE_PORT_8200_TCP_ADDR, VAULT_ACTIVE_PORT_8200_TCP_PORT, VAULT_ACTIVE_PORT_8200_TCP_PROTO, VAULT_ACTIVE_PORT_8201_TCP, VAULT_ACTIVE_PORT_8201_TCP_ADDR, VAULT_ACTIVE_PORT_8201_TCP_PORT, VAULT_ACTIVE_PORT_8201_TCP_PROTO, VAULT_ACTIVE_SERVICE_HOST, VAULT_ACTIVE_SERVICE_PORT, VAULT_ACTIVE_SERVICE_PORT_HTTP, VAULT_ACTIVE_SERVICE_PORT_HTTPS_INTERNAL, VAULT_ADDR, VAULT_AGENT_INJECTOR_SVC_PORT, VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP, VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_ADDR, VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PORT, VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PROTO, VAULT_AGENT_INJECTOR_SVC_SERVICE_HOST, VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT, VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT_HTTPS, VAULT_API_ADDR, VAULT_CLUSTER_ADDR, VAULT_K8S_NAMESPACE, VAULT_K8S_POD_NAME, VAULT_PORT, VAULT_PORT_8200_TCP, VAULT_PORT_8200_TCP_ADDR, VAULT_PORT_8200_TCP_PORT, VAULT_PORT_8200_TCP_PROTO, VAULT_PORT_8201_TCP, VAULT_PORT_8201_TCP_ADDR, VAULT_PORT_8201_TCP_PORT, VAULT_PORT_8201_TCP_PROTO, VAULT_SERVICE_HOST, VAULT_SERVICE_PORT, VAULT_SERVICE_PORT_HTTP, VAULT_SERVICE_PORT_HTTPS_INTERNAL, VAULT_STANDBY_PORT, VAULT_STANDBY_PORT_8200_TCP, VAULT_STANDBY_PORT_8200_TCP_ADDR, VAULT_STANDBY_PORT_8200_TCP_PORT, VAULT_STANDBY_PORT_8200_TCP_PROTO, VAULT_STANDBY_PORT_8201_TCP, VAULT_STANDBY_PORT_8201_TCP_ADDR, VAULT_STANDBY_PORT_8201_TCP_PORT, VAULT_STANDBY_PORT_8201_TCP_PROTO, VAULT_STANDBY_SERVICE_HOST, VAULT_STANDBY_SERVICE_PORT, VAULT_STANDBY_SERVICE_PORT_HTTP, VAULT_STANDBY_SERVICE_PORT_HTTPS_INTERNAL, VAULT_UI_PORT, VAULT_UI_PORT_8200_TCP, VAULT_UI_PORT_8200_TCP_ADDR, VAULT_UI_PORT_8200_TCP_PORT, VAULT_UI_PORT_8200_TCP_PROTO, VAULT_UI_SERVICE_HOST, VAULT_UI_SERVICE_PORT, VAULT_UI_SERVICE_PORT_HTTP, VERSION
               Go Version: go1.21.3
               Listener 1: tcp (addr: "[::]:8200", cluster address: "[::]:8201", max_request_duration: "1m30s", max_request_size: "33554432", tls: "disabled")
                Log Level: 
                    Mlock: supported: true, enabled: false
            Recovery Mode: false
-                 Storage: file
+                 Storage: raft (HA available)
                  Version: Vault v1.15.2, built 2023-11-06T11:33:28Z
              Version Sha: cf1b5cafa047bc8e4a3f93444fcb4011593b92cb
 
 ==> Vault server started! Log data will stream in below:
 
-2024-01-11T18:36:46.994Z [INFO]  proxy environment: http_proxy="" https_proxy="" no_proxy=""
-2024-01-11T18:36:46.995Z [INFO]  incrementing seal generation: generation=1
-2024-01-11T18:36:46.996Z [INFO]  core: Initializing version history cache for core
-2024-01-11T18:36:46.996Z [INFO]  events: Starting event system
-2024-01-11T18:36:55.129Z [INFO]  core: security barrier not initialized
-2024-01-11T18:36:55.129Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:00.251Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:00.251Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:05.135Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:05.136Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:10.205Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:10.205Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:15.134Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:15.135Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:20.105Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:20.105Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:25.179Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:25.179Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:30.136Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:30.137Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:35.164Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:35.164Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:40.116Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:40.116Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:45.157Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:45.157Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:50.119Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:50.119Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:51.790Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:51.790Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:37:55.228Z [INFO]  core: security barrier not initialized
-2024-01-11T18:37:55.228Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:00.106Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:00.106Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:05.127Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:05.128Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:10.161Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:10.161Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:15.238Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:15.238Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:20.131Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:20.131Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:25.133Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:25.133Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:30.167Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:30.167Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:35.135Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:35.135Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:40.137Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:40.137Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:45.117Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:45.117Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:50.110Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:50.110Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:54.772Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:54.772Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:38:55.124Z [INFO]  core: security barrier not initialized
-2024-01-11T18:38:55.124Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:00.183Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:00.183Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:05.131Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:05.131Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:10.195Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:10.195Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:15.138Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:15.139Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:20.127Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:20.127Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:25.172Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:25.172Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:30.111Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:30.111Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:35.127Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:35.127Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:40.221Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:40.221Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:45.110Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:45.110Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:50.111Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:50.111Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:55.185Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:55.185Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:39:55.742Z [INFO]  core: security barrier not initialized
-2024-01-11T18:39:55.742Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:00.114Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:00.114Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:05.226Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:05.226Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:10.155Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:10.155Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:15.253Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:15.253Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:20.126Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:20.126Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:25.111Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:25.111Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:30.119Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:30.119Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:35.192Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:35.192Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:40.156Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:40.156Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:45.172Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:45.172Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:50.169Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:50.169Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:40:55.124Z [INFO]  core: security barrier not initialized
-2024-01-11T18:40:55.124Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:00.131Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:00.131Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:05.137Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:05.137Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:10.116Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:10.116Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:11.808Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:11.808Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:15.101Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:15.101Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:20.125Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:20.125Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:25.125Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:25.125Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:30.125Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:30.125Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:35.124Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:35.124Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:40.174Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:40.174Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:45.138Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:45.138Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:50.200Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:50.200Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:41:55.118Z [INFO]  core: security barrier not initialized
-2024-01-11T18:41:55.118Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:00.113Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:00.113Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:05.141Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:05.141Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:10.131Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:10.131Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:15.132Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:15.132Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:20.135Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:20.135Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:21.714Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:21.714Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:25.127Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:25.128Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:30.116Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:30.116Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:35.199Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:35.199Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:40.194Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:40.194Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:45.123Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:45.124Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:50.196Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:50.196Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:42:55.149Z [INFO]  core: security barrier not initialized
-2024-01-11T18:42:55.149Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:00.098Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:00.098Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:05.170Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:05.170Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:10.246Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:10.246Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:15.127Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:15.127Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:20.245Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:20.245Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:24.733Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:24.733Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:25.188Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:25.189Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:30.206Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:30.207Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:35.119Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:35.119Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:40.186Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:40.186Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:45.127Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:45.127Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:50.143Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:50.143Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:43:55.125Z [INFO]  core: security barrier not initialized
-2024-01-11T18:43:55.125Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:00.197Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:00.197Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:05.118Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:05.118Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:10.134Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:10.134Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:15.126Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:15.126Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:20.227Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:20.227Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:25.130Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:25.131Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:30.158Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:30.158Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:35.154Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:35.154Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:40.195Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:40.195Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:42.714Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:42.714Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:45.181Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:45.181Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:50.115Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:50.115Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:44:55.113Z [INFO]  core: security barrier not initialized
-2024-01-11T18:44:55.113Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:45:00.116Z [INFO]  core: security barrier not initialized
-2024-01-11T18:45:00.116Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:45:05.130Z [INFO]  core: security barrier not initialized
-2024-01-11T18:45:05.130Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:45:09.752Z [INFO]  core: security barrier not initialized
-2024-01-11T18:45:09.752Z [INFO]  core: seal configuration missing, not initialized
-2024-01-11T18:45:09.753Z [INFO]  core: security barrier not initialized
-2024-01-11T18:45:09.753Z [INFO]  core: security barrier initialized: stored=1 shares=1 threshold=1
-2024-01-11T18:45:09.755Z [INFO]  core: post-unseal setup starting
-2024-01-11T18:45:09.765Z [INFO]  core: loaded wrapping token key
-2024-01-11T18:45:09.765Z [INFO]  core: successfully setup plugin runtime catalog
-2024-01-11T18:45:09.766Z [INFO]  core: successfully setup plugin catalog: plugin-directory=""
-2024-01-11T18:45:09.767Z [INFO]  core: no mounts; adding default mount table
-2024-01-11T18:45:09.770Z [INFO]  core: successfully mounted: type=cubbyhole version="v1.15.2+builtin.vault" path=cubbyhole/ namespace="ID: root. Path: "
-2024-01-11T18:45:09.771Z [INFO]  core: successfully mounted: type=system version="v1.15.2+builtin.vault" path=sys/ namespace="ID: root. Path: "
-2024-01-11T18:45:09.772Z [INFO]  core: successfully mounted: type=identity version="v1.15.2+builtin.vault" path=identity/ namespace="ID: root. Path: "
-2024-01-11T18:45:09.775Z [INFO]  core: successfully mounted: type=token version="v1.15.2+builtin.vault" path=token/ namespace="ID: root. Path: "
-2024-01-11T18:45:09.776Z [INFO]  rollback: Starting the rollback manager with 256 workers
-2024-01-11T18:45:09.776Z [INFO]  rollback: starting rollback manager
-2024-01-11T18:45:09.776Z [INFO]  core: restoring leases
-2024-01-11T18:45:09.777Z [INFO]  expiration: lease restore complete
-2024-01-11T18:45:09.778Z [INFO]  identity: entities restored
-2024-01-11T18:45:09.778Z [INFO]  identity: groups restored
-2024-01-11T18:45:09.778Z [INFO]  core: usage gauge collection is disabled
-2024-01-11T18:45:09.779Z [INFO]  core: Recorded vault version: vault version=1.15.2 upgrade time="2024-01-11 18:45:09.778655546 +0000 UTC" build date=2023-11-06T11:33:28Z
-2024-01-11T18:45:10.392Z [INFO]  core: post-unseal setup complete
-2024-01-11T18:45:10.393Z [INFO]  core: root token generated
-2024-01-11T18:45:10.393Z [INFO]  core: pre-seal teardown starting
-2024-01-11T18:45:10.393Z [INFO]  rollback: stopping rollback manager
-2024-01-11T18:45:10.394Z [INFO]  core: pre-seal teardown complete
+2024-01-15T18:44:02.667Z [INFO]  proxy environment: http_proxy="" https_proxy="" no_proxy=""
+2024-01-15T18:44:02.828Z [INFO]  incrementing seal generation: generation=1
+2024-01-15T18:44:02.828Z [INFO]  core: Initializing version history cache for core
+2024-01-15T18:44:02.828Z [INFO]  events: Starting event system
+2024-01-15T18:44:07.387Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:07.387Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:44:12.383Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:12.383Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:44:17.392Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:17.392Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:44:22.382Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:22.382Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:44:27.385Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:27.385Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:44:32.392Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:32.392Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:44:37.386Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:37.386Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:44:42.388Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:42.388Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:44:47.387Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:47.387Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:44:52.388Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:52.388Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:44:57.380Z [INFO]  core: security barrier not initialized
+2024-01-15T18:44:57.380Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:02.398Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:02.398Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:07.384Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:07.384Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:11.546Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:11.546Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:12.386Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:12.386Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:17.391Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:17.391Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:22.388Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:22.388Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:27.393Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:27.393Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:32.409Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:32.409Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:37.388Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:37.388Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:42.386Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:42.386Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:47.387Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:47.387Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:52.394Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:52.394Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:45:57.387Z [INFO]  core: security barrier not initialized
+2024-01-15T18:45:57.387Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:02.385Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:02.385Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:07.397Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:07.397Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:12.383Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:12.383Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:17.376Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:17.376Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:22.398Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:22.398Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:23.553Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:23.553Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:27.394Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:27.394Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:32.386Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:32.386Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:37.389Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:37.389Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:42.388Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:42.388Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:47.391Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:47.391Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:52.381Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:52.381Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:46:57.386Z [INFO]  core: security barrier not initialized
+2024-01-15T18:46:57.386Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:47:02.386Z [INFO]  core: security barrier not initialized
+2024-01-15T18:47:02.386Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:47:07.394Z [INFO]  core: security barrier not initialized
+2024-01-15T18:47:07.394Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:47:12.399Z [INFO]  core: security barrier not initialized
+2024-01-15T18:47:12.400Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:47:17.398Z [INFO]  core: security barrier not initialized
+2024-01-15T18:47:17.398Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:47:18.212Z [INFO]  core: security barrier not initialized
+2024-01-15T18:47:18.212Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:47:18.213Z [INFO]  core: security barrier not initialized
+2024-01-15T18:47:18.222Z [INFO]  storage.raft: creating Raft: config="&raft.Config{ProtocolVersion:3, HeartbeatTimeout:5000000000, ElectionTimeout:5000000000, CommitTimeout:50000000, MaxAppendEntries:64, BatchApplyCh:true, ShutdownOnRemove:true, TrailingLogs:0x2800, SnapshotInterval:120000000000, SnapshotThreshold:0x2000, LeaderLeaseTimeout:2500000000, LocalID:\"efdf9691-b3da-0ffa-43e6-f624570adb1c\", NotifyCh:(chan<- bool)(0xc002e28930), LogOutput:io.Writer(nil), LogLevel:\"DEBUG\", Logger:(*hclog.interceptLogger)(0xc002d836e0), NoSnapshotRestoreOnStart:true, skipStartup:false}"
+2024-01-15T18:47:18.227Z [INFO]  storage.raft: initial configuration: index=1 servers="[{Suffrage:Voter ID:efdf9691-b3da-0ffa-43e6-f624570adb1c Address:vault-0.vault-internal:8201}]"
+2024-01-15T18:47:18.227Z [INFO]  storage.raft: entering follower state: follower="Node at efdf9691-b3da-0ffa-43e6-f624570adb1c [Follower]" leader-address= leader-id=
+2024-01-15T18:47:22.397Z [INFO]  core: security barrier not initialized
+2024-01-15T18:47:26.970Z [WARN]  storage.raft: heartbeat timeout reached, starting election: last-leader-addr= last-leader-id=
+2024-01-15T18:47:26.970Z [INFO]  storage.raft: entering candidate state: node="Node at efdf9691-b3da-0ffa-43e6-f624570adb1c [Candidate]" term=2
+2024-01-15T18:47:26.994Z [INFO]  storage.raft: election won: term=2 tally=1
+2024-01-15T18:47:26.994Z [INFO]  storage.raft: entering leader state: leader="Node at efdf9691-b3da-0ffa-43e6-f624570adb1c [Leader]"
+2024-01-15T18:47:27.006Z [INFO]  core: seal configuration missing, not initialized
+2024-01-15T18:47:27.026Z [INFO]  core: security barrier initialized: stored=1 shares=5 threshold=3
+2024-01-15T18:47:27.078Z [INFO]  core: post-unseal setup starting
+2024-01-15T18:47:27.087Z [INFO]  core: loaded wrapping token key
+2024-01-15T18:47:27.087Z [INFO]  core: successfully setup plugin runtime catalog
+2024-01-15T18:47:27.087Z [INFO]  core: successfully setup plugin catalog: plugin-directory=""
+2024-01-15T18:47:27.087Z [INFO]  core: no mounts; adding default mount table
+2024-01-15T18:47:27.116Z [INFO]  core: successfully mounted: type=cubbyhole version="v1.15.2+builtin.vault" path=cubbyhole/ namespace="ID: root. Path: "
+2024-01-15T18:47:27.116Z [INFO]  core: successfully mounted: type=system version="v1.15.2+builtin.vault" path=sys/ namespace="ID: root. Path: "
+2024-01-15T18:47:27.116Z [INFO]  core: successfully mounted: type=identity version="v1.15.2+builtin.vault" path=identity/ namespace="ID: root. Path: "
+2024-01-15T18:47:27.176Z [INFO]  core: successfully mounted: type=token version="v1.15.2+builtin.vault" path=token/ namespace="ID: root. Path: "
+2024-01-15T18:47:27.181Z [INFO]  rollback: Starting the rollback manager with 256 workers
+2024-01-15T18:47:27.181Z [INFO]  rollback: starting rollback manager
+2024-01-15T18:47:27.181Z [INFO]  core: restoring leases
+2024-01-15T18:47:27.181Z [INFO]  expiration: lease restore complete
+2024-01-15T18:47:27.192Z [INFO]  identity: entities restored
+2024-01-15T18:47:27.192Z [INFO]  identity: groups restored
+2024-01-15T18:47:27.192Z [INFO]  core: usage gauge collection is disabled
+2024-01-15T18:47:27.210Z [INFO]  core: Recorded vault version: vault version=1.15.2 upgrade time="2024-01-15 18:47:27.192642348 +0000 UTC" build date=2023-11-06T11:33:28Z
+2024-01-15T18:47:27.722Z [INFO]  core: post-unseal setup complete
+2024-01-15T18:47:27.736Z [INFO]  core: root token generated
+2024-01-15T18:47:27.745Z [INFO]  core: pre-seal teardown starting
+2024-01-15T18:47:27.745Z [INFO]  core: stopping raft active node
+2024-01-15T18:47:27.745Z [INFO]  rollback: stopping rollback manager
+2024-01-15T18:47:27.745Z [INFO]  core: pre-seal teardown complete
 [user@rocky9 lab-13]$ 
 ```
 
@@ -515,16 +405,16 @@ Key                Value
 Seal Type          shamir
 Initialized        true
 Sealed             true
-Total Shares       1
-Threshold          1
-Unseal Progress    0/1
+Total Shares       5
+Threshold          3
+Unseal Progress    0/3
 Unseal Nonce       n/a
 Version            1.15.2
 Build Date         2023-11-06T11:33:28Z
-Storage Type       file
-HA Enabled         false
+Storage Type       raft
+HA Enabled         true
 command terminated with exit code 2
-[user@rocky9 lab-13]$
+[user@rocky9 lab-13]$ 
 ```
 
 ---
@@ -539,34 +429,69 @@ command terminated with exit code 2
 ```
 
 ```
-[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- env | grep VAULT
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 env | grep VAULT
+kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.
 VAULT_K8S_POD_NAME=vault-0
 VAULT_K8S_NAMESPACE=default
-VAULT_API_ADDR=http://10.244.0.4:8200
-VAULT_CLUSTER_ADDR=https://vault-0.vault-internal:8201
+VAULT_API_ADDR=http://10.112.128.15:8200
 VAULT_ADDR=http://127.0.0.1:8200
-VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_ADDR=10.108.226.101
+VAULT_CLUSTER_ADDR=https://vault-0.vault-internal:8201
+VAULT_ACTIVE_SERVICE_HOST=10.96.181.128
+VAULT_PORT_8201_TCP_ADDR=10.96.241.34
+VAULT_UI_SERVICE_HOST=10.96.227.61
+VAULT_UI_SERVICE_PORT_HTTP=8200
+VAULT_AGENT_INJECTOR_SVC_PORT=tcp://10.96.227.31:443
+VAULT_STANDBY_PORT_8201_TCP=tcp://10.96.180.204:8201
+VAULT_ACTIVE_PORT_8200_TCP_PROTO=tcp
 VAULT_SERVICE_PORT=8200
-VAULT_PORT_8200_TCP_PORT=8200
-VAULT_AGENT_INJECTOR_SVC_PORT=tcp://10.108.226.101:443
-VAULT_PORT=tcp://10.98.62.126:8200
-VAULT_PORT_8201_TCP_PROTO=tcp
-VAULT_PORT_8200_TCP_ADDR=10.98.62.126
-VAULT_PORT_8201_TCP_ADDR=10.98.62.126
-VAULT_AGENT_INJECTOR_SVC_SERVICE_HOST=10.108.226.101
-VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT=443
-VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PROTO=tcp
-VAULT_SERVICE_PORT_HTTPS_INTERNAL=8201
-VAULT_PORT_8201_TCP=tcp://10.98.62.126:8201
-VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT_HTTPS=443
-VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP=tcp://10.108.226.101:443
-VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PORT=443
-VAULT_SERVICE_HOST=10.98.62.126
+VAULT_ACTIVE_SERVICE_PORT=8200
+VAULT_ACTIVE_PORT_8201_TCP_PROTO=tcp
+VAULT_STANDBY_PORT_8201_TCP_ADDR=10.96.180.204
+VAULT_STANDBY_SERVICE_HOST=10.96.180.204
+VAULT_STANDBY_PORT_8200_TCP_PROTO=tcp
+VAULT_STANDBY_PORT_8200_TCP_PORT=8200
+VAULT_STANDBY_PORT_8200_TCP_ADDR=10.96.180.204
+VAULT_STANDBY_PORT_8201_TCP_PORT=8201
 VAULT_SERVICE_PORT_HTTP=8200
-VAULT_PORT_8200_TCP=tcp://10.98.62.126:8200
+VAULT_UI_PORT_8200_TCP_PORT=8200
+VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_ADDR=10.96.227.31
+VAULT_STANDBY_PORT_8201_TCP_PROTO=tcp
+VAULT_ACTIVE_PORT_8201_TCP_ADDR=10.96.181.128
+VAULT_PORT=tcp://10.96.241.34:8200
+VAULT_STANDBY_SERVICE_PORT=8200
+VAULT_PORT_8201_TCP=tcp://10.96.241.34:8201
+VAULT_PORT_8200_TCP_PORT=8200
+VAULT_PORT_8201_TCP_PROTO=tcp
+VAULT_UI_PORT_8200_TCP_ADDR=10.96.227.61
+VAULT_ACTIVE_PORT_8200_TCP_ADDR=10.96.181.128
+VAULT_STANDBY_PORT_8200_TCP=tcp://10.96.180.204:8200
+VAULT_ACTIVE_PORT=tcp://10.96.181.128:8200
+VAULT_ACTIVE_PORT_8201_TCP_PORT=8201
+VAULT_STANDBY_PORT=tcp://10.96.180.204:8200
+VAULT_ACTIVE_PORT_8200_TCP_PORT=8200
 VAULT_PORT_8200_TCP_PROTO=tcp
+VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PROTO=tcp
+VAULT_PORT_8200_TCP_ADDR=10.96.241.34
+VAULT_UI_PORT_8200_TCP=tcp://10.96.227.61:8200
+VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT=443
+VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP=tcp://10.96.227.31:443
+VAULT_STANDBY_SERVICE_PORT_HTTPS_INTERNAL=8201
+VAULT_SERVICE_HOST=10.96.241.34
+VAULT_SERVICE_PORT_HTTPS_INTERNAL=8201
 VAULT_PORT_8201_TCP_PORT=8201
-[user@rocky9 lab-13]$
+VAULT_AGENT_INJECTOR_SVC_SERVICE_HOST=10.96.227.31
+VAULT_ACTIVE_SERVICE_PORT_HTTPS_INTERNAL=8201
+VAULT_ACTIVE_PORT_8200_TCP=tcp://10.96.181.128:8200
+VAULT_UI_SERVICE_PORT=8200
+VAULT_UI_PORT=tcp://10.96.227.61:8200
+VAULT_PORT_8200_TCP=tcp://10.96.241.34:8200
+VAULT_UI_PORT_8200_TCP_PROTO=tcp
+VAULT_ACTIVE_PORT_8201_TCP=tcp://10.96.181.128:8201
+VAULT_STANDBY_SERVICE_PORT_HTTP=8200
+VAULT_ACTIVE_SERVICE_PORT_HTTP=8200
+VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT_HTTPS=443
+VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PORT=443
+[user@rocky9 lab-13]$ 
 ```
 
 *  Распечатать нужно каждый под 
@@ -580,20 +505,53 @@ kubectl exec -it vault-2 -- vault operator unseal 'qpt7e1w2D2tQqPdknR8A5VFrzFZ0Y
 ```
 
 ``
-[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator unseal 'F6KsHvN7Gc4BQnA+++GQ/HCzilfCtsJn6YbYAmBQv5s='
-Key             Value
----             -----
-Seal Type       shamir
-Initialized     true
-Sealed          false
-Total Shares    1
-Threshold       1
-Version         1.15.2
-Build Date      2023-11-06T11:33:28Z
-Storage Type    file
-Cluster Name    vault-cluster-33c5f7f9
-Cluster ID      0607736e-7bf8-1b68-37d2-d2fa9a59581c
-HA Enabled      false
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator unseal 'N8ZVIXld25WviRoLUZp+IeutwBFV3sgD8H+LRhxnJVbe'
+Key                Value
+---                -----
+Seal Type          shamir
+Initialized        true
+Sealed             true
+Total Shares       5
+Threshold          3
+Unseal Progress    1/3
+Unseal Nonce       18013c6c-e2ed-4879-00c9-25f9f33604f4
+Version            1.15.2
+Build Date         2023-11-06T11:33:28Z
+Storage Type       raft
+HA Enabled         true
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator unseal 'Hw83M4i+wCkbUsXrizvKM5NP9bHUb9Px04vuHVadYmUZ'
+Key                Value
+---                -----
+Seal Type          shamir
+Initialized        true
+Sealed             true
+Total Shares       5
+Threshold          3
+Unseal Progress    2/3
+Unseal Nonce       18013c6c-e2ed-4879-00c9-25f9f33604f4
+Version            1.15.2
+Build Date         2023-11-06T11:33:28Z
+Storage Type       raft
+HA Enabled         true
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator unseal '3vF+dmsIQqLJzKkwPgiXgKp0x9RF51dJt1xNNHbIWpkV'
+Key                     Value
+---                     -----
+Seal Type               shamir
+Initialized             true
+Sealed                  false
+Total Shares            5
+Threshold               3
+Version                 1.15.2
+Build Date              2023-11-06T11:33:28Z
+Storage Type            raft
+Cluster Name            vault-cluster-98abcb76
+Cluster ID              8547dad7-5b8c-e4bb-af3a-0d334f463c91
+HA Enabled              true
+HA Cluster              https://vault-0.vault-internal:8201
+HA Mode                 active
+Active Since            2024-01-15T18:58:10.577764069Z
+Raft Committed Index    54
+Raft Applied Index      54
 [user@rocky9 lab-13]$ 
 ```
 
@@ -627,7 +585,7 @@ Code: 403. Errors:
 
 * permission denied
 command terminated with exit code 2
-[user@rocky9 lab-13]$
+[user@rocky9 lab-13]$ 
 ```
 
 ---
@@ -640,7 +598,7 @@ Token (will be hidden):
 ```
 
 ```
-[user@rocky9 lab-13]$ kubectl exec -it vault-0 --  vault login
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault login
 Token (will be hidden): 
 Success! You are now authenticated. The token information displayed below
 is already stored in the token helper. You do NOT need to run "vault login"
@@ -648,8 +606,8 @@ again. Future Vault requests will automatically use this token.
 
 Key                  Value
 ---                  -----
-token                hvs.ckAMilH493UGx7W6qOAT8kx0
-token_accessor       987rRVUjVLMJMRVBTamStbZz
+token                hvs.oen1aEGBLNV3VdnBqQwRwXQY
+token_accessor       MqfiYz1jChDqSB4sbvaRQcW7
 token_duration       ∞
 token_renewable      false
 token_policies       ["root"]
@@ -666,10 +624,10 @@ kubectl exec -it vault-0 --  vault auth list
 ```
 
 ```
-[user@rocky9 lab-13]$ kubectl exec -it vault-0 --  vault auth list
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault auth list
 Path      Type     Accessor               Description                Version
 ----      ----     --------               -----------                -------
-token/    token    auth_token_f48156ef    token based credentials    n/a
+token/    token    auth_token_615db6d7    token based credentials    n/a
 [user@rocky9 lab-13]$ 
 ```
 
@@ -691,27 +649,29 @@ kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
 ```
 [user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault secrets enable --path=otus kv
 Success! Enabled the kv secrets engine at: otus/
-[user@rocky9 lab-13]$ 
 [user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault secrets list --detailed
 Path          Plugin       Accessor              Default TTL    Max TTL    Force No Cache    Replication    Seal Wrap    External Entropy Access    Options    Description                                                UUID                                    Version    Running Version          Running SHA256    Deprecation Status
 ----          ------       --------              -----------    -------    --------------    -----------    ---------    -----------------------    -------    -----------                                                ----                                    -------    ---------------          --------------    ------------------
-cubbyhole/    cubbyhole    cubbyhole_210f1db3    n/a            n/a        false             local          false        false                      map[]      per-token private secret storage                           1d64970b-2199-824c-b73e-d42c4ca3b326    n/a        v1.15.2+builtin.vault    n/a               n/a
-identity/     identity     identity_94ffa7c6     system         system     false             replicated     false        false                      map[]      identity store                                             08eb3be2-0186-e1fa-3ff7-7e63fa7f00df    n/a        v1.15.2+builtin.vault    n/a               n/a
-otus/         kv           kv_1b274113           system         system     false             replicated     false        false                      map[]      n/a                                                        e3242ed6-4524-ca5c-52ce-eba064896f95    n/a        v0.16.1+builtin          n/a               supported
-sys/          system       system_c70ea374       n/a            n/a        false             replicated     true         false                      map[]      system endpoints used for control, policy and debugging    746e3ace-5cf8-c8d0-fc3c-9ab8f68fd325    n/a        v1.15.2+builtin.vault    n/a               n/a
-[user@rocky9 lab-13]$ 
+cubbyhole/    cubbyhole    cubbyhole_28ec713a    n/a            n/a        false             local          false        false                      map[]      per-token private secret storage                           e8a3d249-05d3-0f67-1969-023bef40786c    n/a        v1.15.2+builtin.vault    n/a               n/a
+identity/     identity     identity_96658b25     system         system     false             replicated     false        false                      map[]      identity store                                             da4af9bb-f7f5-4379-8f65-db0b78439ecd    n/a        v1.15.2+builtin.vault    n/a               n/a
+otus/         kv           kv_888e46fe           system         system     false             replicated     false        false                      map[]      n/a                                                        87974537-6381-f4e1-383e-6760bf13f071    n/a        v0.16.1+builtin          n/a               supported
+sys/          system       system_4fe5d97f       n/a            n/a        false             replicated     true         false                      map[]      system endpoints used for control, policy and debugging    d3d98ff2-04a6-f2c3-5e5e-831baea487f3    n/a        v1.15.2+builtin.vault    n/a               n/a
 [user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='asajkjkahs'
 Success! Data written to: otus/otus-ro/config
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='asajkjkahs'
+Success! Data written to: otus/otus-rw/config
 [user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault read otus/otus-ro/config
 Key                 Value
 ---                 -----
 refresh_interval    768h
 password            asajkjkahs
 username            otus
-[user@rocky9 lab-13]$ 
 [user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
-No value found at otus/otus-rw/config
-command terminated with exit code 2
+====== Data ======
+Key         Value
+---         -----
+password    asajkjkahs
+username    otus
 [user@rocky9 lab-13]$ 
 ```
 
@@ -729,12 +689,11 @@ kubectl exec -it vault-0 -- vault auth list
 ```
 [user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault auth enable kubernetes
 Success! Enabled kubernetes auth method at: kubernetes/
-[user@rocky9 lab-13]$ 
-[user@rocky9 lab-13]$ kubectl exec -it vault-0 --  vault auth list
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault auth list
 Path           Type          Accessor                    Description                Version
 ----           ----          --------                    -----------                -------
-kubernetes/    kubernetes    auth_kubernetes_2702815f    n/a                        n/a
-token/         token         auth_token_f48156ef         token based credentials    n/a
+kubernetes/    kubernetes    auth_kubernetes_8839f845    n/a                        n/a
+token/         token         auth_token_615db6d7         token based credentials    n/a
 [user@rocky9 lab-13]$ 
 ```
 
@@ -765,7 +724,7 @@ EOF
 
 ```
 [user@rocky9 lab-13]$ vi vault-auth-service-account.yml
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: role-tokenreview-binding
@@ -795,9 +754,11 @@ $ kubectl apply --filename vault-auth-service-account.yml
 [user@rocky9 lab-13]$ kubectl create serviceaccount vault-auth
 serviceaccount/vault-auth created
 [user@rocky9 lab-13]$ 
-[user@rocky9 lab-13]$ kubectl apply -f vault-auth-service-account.yml
-error: resource mapping not found for name: "role-tokenreview-binding" namespace: "default" from "vault-auth-service-account.yml": no matches for kind "ClusterRoleBinding" in version "rbac.authorization.k8s.io/v1beta1"
-ensure CRDs are installed first
+```
+
+```
+[user@rocky9 lab-13]$ kubectl apply -f ./vault-auth-service-account.yml 
+clusterrolebinding.rbac.authorization.k8s.io/role-tokenreview-binding created
 [user@rocky9 lab-13]$ 
 ```
 
@@ -815,6 +776,20 @@ export K8S_HOST=$(more ~/.kube/config | grep server |awk '/http/ {print $NF}')
 ### alternative way
 export K8S_HOST=$(kubectl cluster-info | grep ‘Kubernetes master’ | awk ‘/https/ {print $NF}’ | sed ’s/\x1b\[[0-9;]*m//g’ )
 ```
+
+```
+[user@rocky9 lab-13]$ export VAULT_SA_NAME=$(kubectl get sa vault-auth -o jsonpath="{.secrets[*]['name']}")
+[user@rocky9 lab-13]$ export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
+[user@rocky9 lab-13]$ export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
+[user@rocky9 lab-13]$ export K8S_HOST=$(more ~/.kube/config | grep server |awk '/http/ {print $NF}')
+[user@rocky9 lab-13]$ 
+```
+
+```
+[user@rocky9 lab-13]$ export K8S_HOST=$(kubectl cluster-info | grep 'Kubernetes control plane' | awk '/https/ {print $NF}' | sed 's/\x1b\[[0-9;]*m//g' )
+[user@rocky9 lab-13]$ 
+```
+
 * Обратите внимание на конструкцию ```sed ’s/\x1b\[[0-9;]*m//g```, что по вашему она делает?
 
 ---
@@ -826,6 +801,15 @@ kubectl exec -it vault-0 -- vault write auth/kubernetes/config \
 token_reviewer_jwt="$SA_JWT_TOKEN" \
 kubernetes_host="$K8S_HOST" \
 kubernetes_ca_cert="$SA_CA_CRT"
+```
+
+```
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault write auth/kubernetes/config \
+token_reviewer_jwt="$SA_JWT_TOKEN" \
+kubernetes_host="$K8S_HOST" \
+kubernetes_ca_cert="$SA_CA_CRT"
+Success! Data written to: auth/kubernetes/config
+[user@rocky9 lab-13]$ 
 ```
 
 ---
@@ -844,6 +828,26 @@ capabilities = ["read", "create", "list"]
 EOF
 ```
 
+```
+[user@rocky9 lab-13]$ tee otus-policy.hcl <<EOF
+path "otus/otus-ro/*" {
+capabilities = ["read", "list"]
+}
+
+path "otus/otus-rw/*" {
+capabilities = ["read", "create", "list"]
+}
+EOF
+path "otus/otus-ro/*" {
+capabilities = ["read", "list"]
+}
+
+path "otus/otus-rw/*" {
+capabilities = ["read", "create", "list"]
+}
+[user@rocky9 lab-13]$ 
+```
+
 ---
 
 ## создадим политку и роль в vault 
@@ -857,6 +861,14 @@ kubectl exec -it vault-0 -- vault write auth/kubernetes/role/otus  \
 bound_service_account_names=vault-auth         \
 bound_service_account_namespaces=default policies=otus-policy  ttl=24h
 ```
+
+```
+[user@rocky9 lab-13]$ kubectl cp ./otus-policy.hcl vault-0:./
+tar: can't open 'otus-policy.hcl': Permission denied
+command terminated with exit code 1
+[user@rocky9 lab-13]$
+```
+Попробовать отключить firewall в kuberneyes !!!
 
 ---
 
