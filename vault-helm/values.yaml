@@ -886,7 +886,7 @@ server:
     raft:
 
       # Enables Raft integrated storage
-      enabled: true
+      enabled: false
       # Set the Node Raft ID to the name of the pod
       setNodeId: false
 
@@ -931,7 +931,8 @@ server:
       }
       storage "consul" {
         path = "vault"
-        address = "HOST_IP:8500"
+        #address = "HOST_IP:8500"
+        address = "consul-consul-server:8500"
       }
 
       service_registration "kubernetes" {}

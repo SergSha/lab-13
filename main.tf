@@ -33,7 +33,7 @@ resource "yandex_kubernetes_cluster" "k8s-lab" {
       subnet_id = yandex_vpc_subnet.labsubnet.id
     }
     public_ip = true
-    security_group_ids = [yandex_vpc_security_group.k8s-public-services.id]
+    #security_group_ids = [yandex_vpc_security_group.k8s-public-services.id]
   }
   service_account_id      = yandex_iam_service_account.sergsha.id
   node_service_account_id = yandex_iam_service_account.sergsha.id
