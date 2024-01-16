@@ -20,7 +20,7 @@ https://github.com/erlong15/otus-vault/blob/main/k8s-materials/04-Vault/00-Homew
 
 Необходимые файлы размещены в репозитории GitHub по ссылке:
 ```
-https://github.com/SergSha/lab-12.git
+https://github.com/SergSha/lab-13.git
 ```
 
 Для начала получаем OAUTH токен:
@@ -36,7 +36,7 @@ export TF_VAR_yc_token=$YC_TOKEN
 
 Скачиваем проект с гитхаба:
 ```
-git clone https://github.com/SergSha/lab-12.git && cd ./lab-12
+git clone https://github.com/SergSha/lab-13.git && cd ./lab-13
 ```
 
 В файле input.auto.tfvars нужно вставить свой 'cloud_id':

@@ -40,6 +40,31 @@
  ```bash
  helm install consul ./consul-helm
  ```
+
+ ```
+ [user@rocky9 lab-13]$ helm install consul ./consul-helm
+NAME: consul
+LAST DEPLOYED: Tue Jan 16 20:26:31 2024
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+NOTES:
+Thank you for installing HashiCorp Consul!
+
+Now that you have deployed Consul, you should look over the docs on using 
+Consul with Kubernetes available here: 
+
+https://www.consul.io/docs/platform/k8s/index.html
+
+
+Your release is named consul.
+
+To learn more about the release, run:
+
+  $ helm status consul
+  $ helm get all consul
+[user@rocky9 lab-13]$ 
+```
  
  * склонируем репозиторий vault
  
@@ -92,9 +117,9 @@ ui:
 * вывод  helm status vault - добавьте в README.md
 
 ```
-[user@redos lab-13]$ helm status vault
+[user@rocky9 lab-13]$ helm status vault
 NAME: vault
-LAST DEPLOYED: Tue Jan 16 11:08:05 2024
+LAST DEPLOYED: Tue Jan 16 20:27:35 2024
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
@@ -111,11 +136,11 @@ Your release is named vault. To learn more about the release, try:
 
   $ helm status vault
   $ helm get manifest vault
-[user@redos lab-13]$
+[user@rocky9 lab-13]$ 
 ```
 
 ```
-[user@redos lab-13]$ kubectl logs vault-0
+[user@rocky9 lab-13]$ kubectl logs vault-0
 ==> Vault server configuration:
 
 Administrative Namespace: 
@@ -128,49 +153,30 @@ Administrative Namespace:
                Log Level: 
                    Mlock: supported: true, enabled: false
            Recovery Mode: false
-                 Storage: raft (HA available)
+                 Storage: consul (HA available)
                  Version: Vault v1.15.2, built 2023-11-06T11:33:28Z
              Version Sha: cf1b5cafa047bc8e4a3f93444fcb4011593b92cb
 
 ==> Vault server started! Log data will stream in below:
 
-2024-01-16T08:08:49.602Z [INFO]  proxy environment: http_proxy="" https_proxy="" no_proxy=""
-2024-01-16T08:08:49.657Z [INFO]  incrementing seal generation: generation=1
-2024-01-16T08:08:49.657Z [INFO]  core: Initializing version history cache for core
-2024-01-16T08:08:49.657Z [INFO]  events: Starting event system
-2024-01-16T08:08:55.121Z [INFO]  core: security barrier not initialized
-2024-01-16T08:08:55.121Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:00.126Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:00.126Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:05.113Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:05.113Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:10.122Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:10.122Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:15.104Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:15.104Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:20.113Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:20.113Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:25.110Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:25.110Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:30.106Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:30.106Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:35.104Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:35.104Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:40.109Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:40.109Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:45.114Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:45.114Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:50.101Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:50.101Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:55.108Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:55.108Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:00.121Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:00.121Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:05.118Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:05.118Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:05.814Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:05.814Z [INFO]  core: seal configuration missing, not initialized
-[user@redos lab-13]$ 
+2024-01-16T17:27:56.501Z [INFO]  proxy environment: http_proxy="" https_proxy="" no_proxy=""
+2024-01-16T17:27:56.501Z [WARN]  storage.consul: appending trailing forward slash to path
+2024-01-16T17:27:56.509Z [INFO]  incrementing seal generation: generation=1
+2024-01-16T17:27:56.510Z [INFO]  core: Initializing version history cache for core
+2024-01-16T17:27:56.510Z [INFO]  events: Starting event system
+2024-01-16T17:28:02.958Z [INFO]  core: security barrier not initialized
+2024-01-16T17:28:02.958Z [INFO]  core: seal configuration missing, not initialized
+2024-01-16T17:28:07.947Z [INFO]  core: security barrier not initialized
+2024-01-16T17:28:07.948Z [INFO]  core: seal configuration missing, not initialized
+2024-01-16T17:28:12.965Z [INFO]  core: security barrier not initialized
+2024-01-16T17:28:12.965Z [INFO]  core: seal configuration missing, not initialized
+2024-01-16T17:28:17.947Z [INFO]  core: security barrier not initialized
+2024-01-16T17:28:17.947Z [INFO]  core: seal configuration missing, not initialized
+2024-01-16T17:28:22.952Z [INFO]  core: security barrier not initialized
+2024-01-16T17:28:22.952Z [INFO]  core: seal configuration missing, not initialized
+2024-01-16T17:28:27.941Z [INFO]  core: security barrier not initialized
+2024-01-16T17:28:27.941Z [INFO]  core: seal configuration missing, not initialized
+[user@rocky9 lab-13]$ 
 ```
 
 
@@ -180,17 +186,17 @@ Administrative Namespace:
 ## Инициализируем vault
 
 * проведите инициализацию через любой под vault'а
-```kubectl exec -it vault-0 -- vault operator init --key-shares=1 --key-threshold=1```
+```kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3```
 
 ```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3
-Unseal Key 1: IsJE273ftipA49lcDcBmZo+uuumLAFNUZiqCgRFWSb3E
-Unseal Key 2: ECLvB66PF7LQWJ7foGH7dnDBN/wIlcrurLiLk8kNjgP8
-Unseal Key 3: WROlsNYieHJPbXDPw8PBACK4a/j9O6mA704xMJtsAygU
-Unseal Key 4: JtqT6q81MZbBAC5ALhgwCd3Nv4musQgBnjUt3oNvP8hk
-Unseal Key 5: o0ugLPAH9RWKiUUTQW1JUwN3jrBh8dI2w3O0r8B7Fc4P
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3
+Unseal Key 1: Xsy7G2fZwNuNtxQHXx90gS1T8fL0uLVwRGUCUhWxfrjm
+Unseal Key 2: tXZ8gWHyb/5tLBJrLmORzuyZIenqWMIMQQrDMkWKdEls
+Unseal Key 3: qPfsHBSp/qZ5fJqyD3tjxu6Ahtllk40eX/9hMg2B2vda
+Unseal Key 4: tUx9STgP1Q/JzPE5xeapE7hbLf8mQVssuEopW122N8+8
+Unseal Key 5: tvZiBvbIv7XG0bdtcPuRxHvb2aqtQcUan2Nswa0JyUQa
 
-Initial Root Token: hvs.c3RJZrHaAYeWzIHdl0r07aoJ
+Initial Root Token: hvs.S39d9xe1EEXLTAnvFgz0fuC1
 
 Vault initialized with 5 key shares and a key threshold of 3. Please securely
 distribute the key shares printed above. When the Vault is re-sealed,
@@ -202,18 +208,18 @@ reconstruct the root key, Vault will remain permanently sealed!
 
 It is possible to generate new unseal keys, provided you have a quorum of
 existing unseal keys shares. See "vault operator rekey" for more information.
-[user@redos lab-13]$
+[user@rocky9 lab-13]$ 
 ```
 
 * сохраните ключи, полученные при инициализации
 ```
-Unseal Key 1: IsJE273ftipA49lcDcBmZo+uuumLAFNUZiqCgRFWSb3E
-Unseal Key 2: ECLvB66PF7LQWJ7foGH7dnDBN/wIlcrurLiLk8kNjgP8
-Unseal Key 3: WROlsNYieHJPbXDPw8PBACK4a/j9O6mA704xMJtsAygU
-Unseal Key 4: JtqT6q81MZbBAC5ALhgwCd3Nv4musQgBnjUt3oNvP8hk
-Unseal Key 5: o0ugLPAH9RWKiUUTQW1JUwN3jrBh8dI2w3O0r8B7Fc4P
+Unseal Key 1: Xsy7G2fZwNuNtxQHXx90gS1T8fL0uLVwRGUCUhWxfrjm
+Unseal Key 2: tXZ8gWHyb/5tLBJrLmORzuyZIenqWMIMQQrDMkWKdEls
+Unseal Key 3: qPfsHBSp/qZ5fJqyD3tjxu6Ahtllk40eX/9hMg2B2vda
+Unseal Key 4: tUx9STgP1Q/JzPE5xeapE7hbLf8mQVssuEopW122N8+8
+Unseal Key 5: tvZiBvbIv7XG0bdtcPuRxHvb2aqtQcUan2Nswa0JyUQa
 
-Initial Root Token: hvs.c3RJZrHaAYeWzIHdl0r07aoJ
+Initial Root Token: hvs.S39d9xe1EEXLTAnvFgz0fuC1
 ```
 * вывод добавьте в README.md
 
@@ -227,7 +233,7 @@ Initial Root Token: hvs.c3RJZrHaAYeWzIHdl0r07aoJ
 ```kubectl logs vault-0```
 
 ```
-[user@redos lab-13]$ kubectl logs vault-0
+[user@rocky9 lab-13]$ kubectl logs vault-0
 ==> Vault server configuration:
 
 Administrative Namespace: 
@@ -240,123 +246,49 @@ Administrative Namespace:
                Log Level: 
                    Mlock: supported: true, enabled: false
            Recovery Mode: false
-                 Storage: raft (HA available)
+                 Storage: consul (HA available)
                  Version: Vault v1.15.2, built 2023-11-06T11:33:28Z
              Version Sha: cf1b5cafa047bc8e4a3f93444fcb4011593b92cb
 
 ==> Vault server started! Log data will stream in below:
 
-2024-01-16T08:08:49.602Z [INFO]  proxy environment: http_proxy="" https_proxy="" no_proxy=""
-2024-01-16T08:08:49.657Z [INFO]  incrementing seal generation: generation=1
-2024-01-16T08:08:49.657Z [INFO]  core: Initializing version history cache for core
-2024-01-16T08:08:49.657Z [INFO]  events: Starting event system
-2024-01-16T08:08:55.121Z [INFO]  core: security barrier not initialized
-2024-01-16T08:08:55.121Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:00.126Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:00.126Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:05.113Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:05.113Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:10.122Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:10.122Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:15.104Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:15.104Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:20.113Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:20.113Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:25.110Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:25.110Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:30.106Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:30.106Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:35.104Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:35.104Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:40.109Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:40.109Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:45.114Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:45.114Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:50.101Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:50.101Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:09:55.108Z [INFO]  core: security barrier not initialized
-2024-01-16T08:09:55.108Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:00.121Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:00.121Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:05.118Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:05.118Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:05.814Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:05.814Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:10.110Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:10.110Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:15.114Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:15.114Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:20.125Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:20.125Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:25.113Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:25.113Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:30.125Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:30.125Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:35.113Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:35.113Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:40.112Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:40.112Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:45.126Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:45.127Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:50.109Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:50.109Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:10:55.112Z [INFO]  core: security barrier not initialized
-2024-01-16T08:10:55.112Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:00.117Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:00.117Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:05.118Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:05.118Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:10.108Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:10.108Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:10.831Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:10.831Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:15.110Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:15.110Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:20.103Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:20.103Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:25.105Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:25.105Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:30.104Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:30.104Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:33.550Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:33.550Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:33.551Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:33.566Z [INFO]  storage.raft: creating Raft: config="&raft.Config{ProtocolVersion:3, HeartbeatTimeout:5000000000, ElectionTimeout:5000000000, CommitTimeout:50000000, MaxAppendEntries:64, BatchApplyCh:true, ShutdownOnRemove:true, TrailingLogs:0x2800, SnapshotInterval:120000000000, SnapshotThreshold:0x2000, LeaderLeaseTimeout:2500000000, LocalID:\"870204de-2ae4-6a6c-30a9-b7b5dd4dd90d\", NotifyCh:(chan<- bool)(0xc002ada540), LogOutput:io.Writer(nil), LogLevel:\"DEBUG\", Logger:(*hclog.interceptLogger)(0xc002f016e0), NoSnapshotRestoreOnStart:true, skipStartup:false}"
-2024-01-16T08:11:33.586Z [INFO]  storage.raft: initial configuration: index=1 servers="[{Suffrage:Voter ID:870204de-2ae4-6a6c-30a9-b7b5dd4dd90d Address:vault-0.vault-internal:8201}]"
-2024-01-16T08:11:33.586Z [INFO]  storage.raft: entering follower state: follower="Node at 870204de-2ae4-6a6c-30a9-b7b5dd4dd90d [Follower]" leader-address= leader-id=
-2024-01-16T08:11:35.108Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:40.106Z [INFO]  core: security barrier not initialized
-2024-01-16T08:11:40.319Z [WARN]  storage.raft: heartbeat timeout reached, starting election: last-leader-addr= last-leader-id=
-2024-01-16T08:11:40.319Z [INFO]  storage.raft: entering candidate state: node="Node at 870204de-2ae4-6a6c-30a9-b7b5dd4dd90d [Candidate]" term=2
-2024-01-16T08:11:40.324Z [INFO]  storage.raft: election won: term=2 tally=1
-2024-01-16T08:11:40.324Z [INFO]  storage.raft: entering leader state: leader="Node at 870204de-2ae4-6a6c-30a9-b7b5dd4dd90d [Leader]"
-2024-01-16T08:11:40.332Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:40.332Z [INFO]  core: seal configuration missing, not initialized
-2024-01-16T08:11:40.348Z [INFO]  core: security barrier initialized: stored=1 shares=5 threshold=3
-2024-01-16T08:11:40.392Z [INFO]  core: post-unseal setup starting
-2024-01-16T08:11:40.402Z [INFO]  core: loaded wrapping token key
-2024-01-16T08:11:40.403Z [INFO]  core: successfully setup plugin runtime catalog
-2024-01-16T08:11:40.403Z [INFO]  core: successfully setup plugin catalog: plugin-directory=""
-2024-01-16T08:11:40.404Z [INFO]  core: no mounts; adding default mount table
-2024-01-16T08:11:40.420Z [INFO]  core: successfully mounted: type=cubbyhole version="v1.15.2+builtin.vault" path=cubbyhole/ namespace="ID: root. Path: "
-2024-01-16T08:11:40.426Z [INFO]  core: successfully mounted: type=system version="v1.15.2+builtin.vault" path=sys/ namespace="ID: root. Path: "
-2024-01-16T08:11:40.433Z [INFO]  core: successfully mounted: type=identity version="v1.15.2+builtin.vault" path=identity/ namespace="ID: root. Path: "
-2024-01-16T08:11:40.532Z [INFO]  core: successfully mounted: type=token version="v1.15.2+builtin.vault" path=token/ namespace="ID: root. Path: "
-2024-01-16T08:11:40.536Z [INFO]  rollback: Starting the rollback manager with 256 workers
-2024-01-16T08:11:40.536Z [INFO]  rollback: starting rollback manager
-2024-01-16T08:11:40.536Z [INFO]  core: restoring leases
-2024-01-16T08:11:40.536Z [INFO]  expiration: lease restore complete
-2024-01-16T08:11:40.563Z [INFO]  identity: entities restored
-2024-01-16T08:11:40.563Z [INFO]  identity: groups restored
-2024-01-16T08:11:40.565Z [INFO]  core: usage gauge collection is disabled
-2024-01-16T08:11:40.573Z [INFO]  core: Recorded vault version: vault version=1.15.2 upgrade time="2024-01-16 08:11:40.565153947 +0000 UTC" build date=2023-11-06T11:33:28Z
-2024-01-16T08:11:41.042Z [INFO]  core: post-unseal setup complete
-2024-01-16T08:11:41.070Z [INFO]  core: root token generated
-2024-01-16T08:11:41.080Z [INFO]  core: pre-seal teardown starting
-2024-01-16T08:11:41.080Z [INFO]  core: stopping raft active node
-2024-01-16T08:11:41.080Z [INFO]  rollback: stopping rollback manager
-2024-01-16T08:11:41.080Z [INFO]  core: pre-seal teardown complete
-[user@redos lab-13]$ 
+2024-01-16T17:27:56.501Z [INFO]  proxy environment: http_proxy="" https_proxy="" no_proxy=""
+2024-01-16T17:27:56.501Z [WARN]  storage.consul: appending trailing forward slash to path
+2024-01-16T17:27:56.509Z [INFO]  incrementing seal generation: generation=1
+2024-01-16T17:27:56.510Z [INFO]  core: Initializing version history cache for core
+2024-01-16T17:27:56.510Z [INFO]  events: Starting event system
+2024-01-16T17:28:02.958Z [INFO]  core: security barrier not initialized
+2024-01-16T17:28:02.958Z [INFO]  core: seal configuration missing, not initialized
+2024-01-16T17:28:07.947Z [INFO]  core: security barrier not initialized
+2024-01-16T17:28:07.948Z [INFO]  core: seal configuration missing, not initialized
+...
+2024-01-16T17:46:39.704Z [INFO]  core: security barrier not initialized
+2024-01-16T17:46:39.704Z [INFO]  core: seal configuration missing, not initialized
+2024-01-16T17:46:39.705Z [INFO]  core: security barrier not initialized
+2024-01-16T17:46:39.748Z [INFO]  core: security barrier initialized: stored=1 shares=5 threshold=3
+2024-01-16T17:46:39.835Z [INFO]  core: post-unseal setup starting
+2024-01-16T17:46:39.850Z [INFO]  core: loaded wrapping token key
+2024-01-16T17:46:39.850Z [INFO]  core: successfully setup plugin runtime catalog
+2024-01-16T17:46:39.850Z [INFO]  core: successfully setup plugin catalog: plugin-directory=""
+2024-01-16T17:46:39.851Z [INFO]  core: no mounts; adding default mount table
+2024-01-16T17:46:39.872Z [INFO]  core: successfully mounted: type=cubbyhole version="v1.15.2+builtin.vault" path=cubbyhole/ namespace="ID: root. Path: "
+2024-01-16T17:46:39.872Z [INFO]  core: successfully mounted: type=system version="v1.15.2+builtin.vault" path=sys/ namespace="ID: root. Path: "
+2024-01-16T17:46:39.873Z [INFO]  core: successfully mounted: type=identity version="v1.15.2+builtin.vault" path=identity/ namespace="ID: root. Path: "
+2024-01-16T17:46:39.970Z [INFO]  core: successfully mounted: type=token version="v1.15.2+builtin.vault" path=token/ namespace="ID: root. Path: "
+2024-01-16T17:46:40.039Z [INFO]  rollback: Starting the rollback manager with 256 workers
+2024-01-16T17:46:40.040Z [INFO]  rollback: starting rollback manager
+2024-01-16T17:46:40.040Z [INFO]  core: restoring leases
+2024-01-16T17:46:40.041Z [INFO]  expiration: lease restore complete
+2024-01-16T17:46:40.068Z [INFO]  identity: entities restored
+2024-01-16T17:46:40.068Z [INFO]  identity: groups restored
+2024-01-16T17:46:40.070Z [INFO]  core: usage gauge collection is disabled
+2024-01-16T17:46:40.080Z [INFO]  core: Recorded vault version: vault version=1.15.2 upgrade time="2024-01-16 17:46:40.069974673 +0000 UTC" build date=2023-11-06T11:33:28Z
+2024-01-16T17:46:40.659Z [INFO]  core: post-unseal setup complete
+2024-01-16T17:46:40.713Z [INFO]  core: root token generated
+2024-01-16T17:46:40.713Z [INFO]  core: pre-seal teardown starting
+2024-01-16T17:46:40.713Z [INFO]  rollback: stopping rollback manager
+2024-01-16T17:46:40.713Z [INFO]  core: pre-seal teardown complete
+[user@rocky9 lab-13]$ 
 ```
 
 * Обратите внимание на параметры Initialized, Sealed
@@ -377,7 +309,7 @@ HA Enabled         true
 ```
 
 ```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault status
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault status
 Key                Value
 ---                -----
 Seal Type          shamir
@@ -389,10 +321,10 @@ Unseal Progress    0/3
 Unseal Nonce       n/a
 Version            1.15.2
 Build Date         2023-11-06T11:33:28Z
-Storage Type       raft
+Storage Type       consul
 HA Enabled         true
 command terminated with exit code 2
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ 
 ```
 
 ---
@@ -407,68 +339,68 @@ command terminated with exit code 2
 ```
 
 ```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- env | grep VAULT
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- env | grep VAULT
+VAULT_K8S_POD_NAME=vault-0
 VAULT_CLUSTER_ADDR=https://vault-0.vault-internal:8201
+VAULT_API_ADDR=http://10.112.128.8:8200
 VAULT_K8S_NAMESPACE=default
 VAULT_ADDR=http://127.0.0.1:8200
-VAULT_K8S_POD_NAME=vault-0
-VAULT_API_ADDR=http://10.112.128.8:8200
-VAULT_PORT_8201_TCP_PORT=8201
 VAULT_ACTIVE_PORT_8201_TCP_PORT=8201
-VAULT_AGENT_INJECTOR_SVC_SERVICE_HOST=10.96.176.124
-VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT=443
-VAULT_SERVICE_HOST=10.96.136.135
+VAULT_STANDBY_PORT=tcp://10.96.131.169:8200
+VAULT_STANDBY_PORT_8200_TCP_PROTO=tcp
+VAULT_SERVICE_HOST=10.96.137.143
+VAULT_UI_PORT=tcp://10.96.214.88:8200
+VAULT_ACTIVE_PORT_8200_TCP=tcp://10.96.252.96:8200
+VAULT_STANDBY_PORT_8201_TCP_PROTO=tcp
 VAULT_SERVICE_PORT=8200
-VAULT_ACTIVE_PORT_8200_TCP_ADDR=10.96.157.138
-VAULT_ACTIVE_PORT_8201_TCP_PROTO=tcp
-VAULT_UI_SERVICE_PORT=8200
-VAULT_ACTIVE_PORT_8200_TCP_PORT=8200
-VAULT_PORT=tcp://10.96.136.135:8200
-VAULT_UI_PORT_8200_TCP=tcp://10.96.169.203:8200
-VAULT_UI_PORT_8200_TCP_PROTO=tcp
-VAULT_STANDBY_PORT_8201_TCP_PORT=8201
-VAULT_ACTIVE_SERVICE_PORT_HTTP=8200
 VAULT_STANDBY_SERVICE_PORT_HTTP=8200
-VAULT_STANDBY_PORT_8201_TCP_ADDR=10.96.148.158
-VAULT_ACTIVE_PORT_8200_TCP_PROTO=tcp
-VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT_HTTPS=443
-VAULT_STANDBY_PORT_8201_TCP=tcp://10.96.148.158:8201
-VAULT_ACTIVE_PORT=tcp://10.96.157.138:8200
-VAULT_AGENT_INJECTOR_SVC_PORT=tcp://10.96.176.124:443
-VAULT_PORT_8200_TCP_ADDR=10.96.136.135
-VAULT_UI_PORT_8200_TCP_ADDR=10.96.169.203
-VAULT_STANDBY_SERVICE_PORT_HTTPS_INTERNAL=8201
-VAULT_ACTIVE_SERVICE_HOST=10.96.157.138
-VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP=tcp://10.96.176.124:443
-VAULT_PORT_8200_TCP=tcp://10.96.136.135:8200
 VAULT_PORT_8200_TCP_PORT=8200
 VAULT_PORT_8201_TCP_PROTO=tcp
-VAULT_ACTIVE_PORT_8201_TCP_ADDR=10.96.157.138
-VAULT_PORT_8201_TCP=tcp://10.96.136.135:8201
-VAULT_UI_SERVICE_PORT_HTTP=8200
-VAULT_STANDBY_PORT_8201_TCP_PROTO=tcp
-VAULT_STANDBY_PORT=tcp://10.96.148.158:8200
-VAULT_STANDBY_PORT_8200_TCP=tcp://10.96.148.158:8200
-VAULT_STANDBY_PORT_8200_TCP_PROTO=tcp
-VAULT_ACTIVE_SERVICE_PORT_HTTPS_INTERNAL=8201
-VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PROTO=tcp
-VAULT_UI_PORT_8200_TCP_PORT=8200
-VAULT_ACTIVE_PORT_8200_TCP=tcp://10.96.157.138:8200
-VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PORT=443
-VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_ADDR=10.96.176.124
-VAULT_SERVICE_PORT_HTTP=8200
-VAULT_PORT_8200_TCP_PROTO=tcp
-VAULT_STANDBY_PORT_8200_TCP_ADDR=10.96.148.158
-VAULT_UI_PORT=tcp://10.96.169.203:8200
-VAULT_STANDBY_SERVICE_PORT=8200
-VAULT_STANDBY_PORT_8200_TCP_PORT=8200
+VAULT_PORT_8201_TCP_PORT=8201
+VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT=443
+VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_ADDR=10.96.189.21
 VAULT_ACTIVE_SERVICE_PORT=8200
-VAULT_ACTIVE_PORT_8201_TCP=tcp://10.96.157.138:8201
+VAULT_PORT=tcp://10.96.137.143:8200
+VAULT_ACTIVE_SERVICE_HOST=10.96.252.96
+VAULT_SERVICE_PORT_HTTP=8200
+VAULT_STANDBY_PORT_8201_TCP=tcp://10.96.131.169:8201
+VAULT_AGENT_INJECTOR_SVC_PORT=tcp://10.96.189.21:443
+VAULT_ACTIVE_PORT_8201_TCP=tcp://10.96.252.96:8201
+VAULT_UI_SERVICE_PORT=8200
+VAULT_ACTIVE_PORT=tcp://10.96.252.96:8200
+VAULT_ACTIVE_PORT_8201_TCP_PROTO=tcp
 VAULT_SERVICE_PORT_HTTPS_INTERNAL=8201
-VAULT_UI_SERVICE_HOST=10.96.169.203
-VAULT_PORT_8201_TCP_ADDR=10.96.136.135
-VAULT_STANDBY_SERVICE_HOST=10.96.148.158
-[user@redos lab-13]$ 
+VAULT_UI_PORT_8200_TCP_PROTO=tcp
+VAULT_AGENT_INJECTOR_SVC_SERVICE_PORT_HTTPS=443
+VAULT_ACTIVE_PORT_8200_TCP_ADDR=10.96.252.96
+VAULT_UI_PORT_8200_TCP_ADDR=10.96.214.88
+VAULT_ACTIVE_SERVICE_PORT_HTTP=8200
+VAULT_STANDBY_SERVICE_PORT_HTTPS_INTERNAL=8201
+VAULT_STANDBY_PORT_8200_TCP_ADDR=10.96.131.169
+VAULT_PORT_8201_TCP=tcp://10.96.137.143:8201
+VAULT_PORT_8201_TCP_ADDR=10.96.137.143
+VAULT_ACTIVE_PORT_8200_TCP_PROTO=tcp
+VAULT_ACTIVE_PORT_8201_TCP_ADDR=10.96.252.96
+VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP=tcp://10.96.189.21:443
+VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PROTO=tcp
+VAULT_AGENT_INJECTOR_SVC_PORT_443_TCP_PORT=443
+VAULT_ACTIVE_SERVICE_PORT_HTTPS_INTERNAL=8201
+VAULT_ACTIVE_PORT_8200_TCP_PORT=8200
+VAULT_UI_SERVICE_HOST=10.96.214.88
+VAULT_STANDBY_PORT_8201_TCP_ADDR=10.96.131.169
+VAULT_STANDBY_PORT_8200_TCP=tcp://10.96.131.169:8200
+VAULT_STANDBY_PORT_8201_TCP_PORT=8201
+VAULT_PORT_8200_TCP=tcp://10.96.137.143:8200
+VAULT_UI_SERVICE_PORT_HTTP=8200
+VAULT_STANDBY_SERVICE_HOST=10.96.131.169
+VAULT_PORT_8200_TCP_PROTO=tcp
+VAULT_UI_PORT_8200_TCP_PORT=8200
+VAULT_STANDBY_SERVICE_PORT=8200
+VAULT_UI_PORT_8200_TCP=tcp://10.96.214.88:8200
+VAULT_STANDBY_PORT_8200_TCP_PORT=8200
+VAULT_PORT_8200_TCP_ADDR=10.96.137.143
+VAULT_AGENT_INJECTOR_SVC_SERVICE_HOST=10.96.189.21
+[user@rocky9 lab-13]$ 
 ```
 
 *  Распечатать нужно каждый под 
@@ -482,7 +414,7 @@ kubectl exec -it vault-2 -- vault operator unseal 'qpt7e1w2D2tQqPdknR8A5VFrzFZ0Y
 ```
 
 ``
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault operator unseal 'IsJE273ftipA49lcDcBmZo+uuumLAFNUZiqCgRFWSb3E'
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator unseal 'Xsy7G2fZwNuNtxQHXx90gS1T8fL0uLVwRGUCUhWxfrjm'
 Key                Value
 ---                -----
 Seal Type          shamir
@@ -491,12 +423,12 @@ Sealed             true
 Total Shares       5
 Threshold          3
 Unseal Progress    1/3
-Unseal Nonce       051fd446-cbf2-8bc3-afd7-43913a46dff2
+Unseal Nonce       b4d29b83-78e8-5778-ccdd-cab8feeb4811
 Version            1.15.2
 Build Date         2023-11-06T11:33:28Z
-Storage Type       raft
+Storage Type       consul
 HA Enabled         true
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault operator unseal 'ECLvB66PF7LQWJ7foGH7dnDBN/wIlcrurLiLk8kNjgP8'
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator unseal 'tXZ8gWHyb/5tLBJrLmORzuyZIenqWMIMQQrDMkWKdEls'
 Key                Value
 ---                -----
 Seal Type          shamir
@@ -505,57 +437,189 @@ Sealed             true
 Total Shares       5
 Threshold          3
 Unseal Progress    2/3
-Unseal Nonce       051fd446-cbf2-8bc3-afd7-43913a46dff2
+Unseal Nonce       b4d29b83-78e8-5778-ccdd-cab8feeb4811
 Version            1.15.2
 Build Date         2023-11-06T11:33:28Z
-Storage Type       raft
+Storage Type       consul
 HA Enabled         true
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault operator unseal 'WROlsNYieHJPbXDPw8PBACK4a/j9O6mA704xMJtsAygU'
-Key                     Value
----                     -----
-Seal Type               shamir
-Initialized             true
-Sealed                  false
-Total Shares            5
-Threshold               3
-Version                 1.15.2
-Build Date              2023-11-06T11:33:28Z
-Storage Type            raft
-Cluster Name            vault-cluster-053a1493
-Cluster ID              f003a037-1e9e-7a47-5ba3-99bb55de8057
-HA Enabled              true
-HA Cluster              https://vault-0.vault-internal:8201
-HA Mode                 active
-Active Since            2024-01-16T08:18:45.536266402Z
-Raft Committed Index    52
-Raft Applied Index      52
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator unseal 'qPfsHBSp/qZ5fJqyD3tjxu6Ahtllk40eX/9hMg2B2vda'
+Key             Value
+---             -----
+Seal Type       shamir
+Initialized     true
+Sealed          false
+Total Shares    5
+Threshold       3
+Version         1.15.2
+Build Date      2023-11-06T11:33:28Z
+Storage Type    consul
+Cluster Name    vault-cluster-b19dcecc
+Cluster ID      b45344c6-3506-be6d-b88b-b326660cf3d0
+HA Enabled      true
+HA Cluster      https://vault-0.vault-internal:8201
+HA Mode         active
+Active Since    2024-01-16T17:54:46.44054218Z
+[user@rocky9 lab-13]$ 
+```
+
+```
+[user@rocky9 lab-13]$ kubectl exec -it vault-1 -- vault operator unseal 'Xsy7G2fZwNuNtxQHXx90gS1T8fL0uLVwRGUCUhWxfrjm'
+Key                Value
+---                -----
+Seal Type          shamir
+Initialized        true
+Sealed             true
+Total Shares       5
+Threshold          3
+Unseal Progress    1/3
+Unseal Nonce       a1222984-c554-2137-ac72-4bb1ffbec2c9
+Version            1.15.2
+Build Date         2023-11-06T11:33:28Z
+Storage Type       consul
+HA Enabled         true
+[user@rocky9 lab-13]$ kubectl exec -it vault-1 -- vault operator unseal 'tXZ8gWHyb/5tLBJrLmORzuyZIenqWMIMQQrDMkWKdEls'
+Key                Value
+---                -----
+Seal Type          shamir
+Initialized        true
+Sealed             true
+Total Shares       5
+Threshold          3
+Unseal Progress    2/3
+Unseal Nonce       a1222984-c554-2137-ac72-4bb1ffbec2c9
+Version            1.15.2
+Build Date         2023-11-06T11:33:28Z
+Storage Type       consul
+HA Enabled         true
+[user@rocky9 lab-13]$ kubectl exec -it vault-1 -- vault operator unseal 'qPfsHBSp/qZ5fJqyD3tjxu6Ahtllk40eX/9hMg2B2vda'
+Key                    Value
+---                    -----
+Seal Type              shamir
+Initialized            true
+Sealed                 false
+Total Shares           5
+Threshold              3
+Version                1.15.2
+Build Date             2023-11-06T11:33:28Z
+Storage Type           consul
+Cluster Name           vault-cluster-b19dcecc
+Cluster ID             b45344c6-3506-be6d-b88b-b326660cf3d0
+HA Enabled             true
+HA Cluster             https://vault-0.vault-internal:8201
+HA Mode                standby
+Active Node Address    http://10.112.128.8:8200
+[user@rocky9 lab-13]$ 
+```
+
+```
+[user@rocky9 lab-13]$ kubectl exec -it vault-2 -- vault operator unseal 'Xsy7G2fZwNuNtxQHXx90gS1T8fL0uLVwRGUCUhWxfrjm'
+Key                Value
+---                -----
+Seal Type          shamir
+Initialized        true
+Sealed             true
+Total Shares       5
+Threshold          3
+Unseal Progress    1/3
+Unseal Nonce       c3446bb0-4333-6351-9943-fad69b88a732
+Version            1.15.2
+Build Date         2023-11-06T11:33:28Z
+Storage Type       consul
+HA Enabled         true
+[user@rocky9 lab-13]$ kubectl exec -it vault-2 -- vault operator unseal 'tXZ8gWHyb/5tLBJrLmORzuyZIenqWMIMQQrDMkWKdEls'
+Key                Value
+---                -----
+Seal Type          shamir
+Initialized        true
+Sealed             true
+Total Shares       5
+Threshold          3
+Unseal Progress    2/3
+Unseal Nonce       c3446bb0-4333-6351-9943-fad69b88a732
+Version            1.15.2
+Build Date         2023-11-06T11:33:28Z
+Storage Type       consul
+HA Enabled         true
+[user@rocky9 lab-13]$ kubectl exec -it vault-2 -- vault operator unseal 'qPfsHBSp/qZ5fJqyD3tjxu6Ahtllk40eX/9hMg2B2vda'
+Key                    Value
+---                    -----
+Seal Type              shamir
+Initialized            true
+Sealed                 false
+Total Shares           5
+Threshold              3
+Version                1.15.2
+Build Date             2023-11-06T11:33:28Z
+Storage Type           consul
+Cluster Name           vault-cluster-b19dcecc
+Cluster ID             b45344c6-3506-be6d-b88b-b326660cf3d0
+HA Enabled             true
+HA Cluster             https://vault-0.vault-internal:8201
+HA Mode                standby
+Active Node Address    http://10.112.128.8:8200
+[user@rocky9 lab-13]$ 
 ```
 
 
 * добавьте выдачу ```vault status```  в README.md 
 
 ```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault status
-Key                     Value
----                     -----
-Seal Type               shamir
-Initialized             true
-Sealed                  false
-Total Shares            5
-Threshold               3
-Version                 1.15.2
-Build Date              2023-11-06T11:33:28Z
-Storage Type            raft
-Cluster Name            vault-cluster-053a1493
-Cluster ID              f003a037-1e9e-7a47-5ba3-99bb55de8057
-HA Enabled              true
-HA Cluster              https://vault-0.vault-internal:8201
-HA Mode                 active
-Active Since            2024-01-16T08:18:45.536266402Z
-Raft Committed Index    56
-Raft Applied Index      56
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault status
+Key             Value
+---             -----
+Seal Type       shamir
+Initialized     true
+Sealed          false
+Total Shares    5
+Threshold       3
+Version         1.15.2
+Build Date      2023-11-06T11:33:28Z
+Storage Type    consul
+Cluster Name    vault-cluster-b19dcecc
+Cluster ID      b45344c6-3506-be6d-b88b-b326660cf3d0
+HA Enabled      true
+HA Cluster      https://vault-0.vault-internal:8201
+HA Mode         active
+Active Since    2024-01-16T17:54:46.44054218Z
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-1 -- vault status
+Key                    Value
+---                    -----
+Seal Type              shamir
+Initialized            true
+Sealed                 false
+Total Shares           5
+Threshold              3
+Version                1.15.2
+Build Date             2023-11-06T11:33:28Z
+Storage Type           consul
+Cluster Name           vault-cluster-b19dcecc
+Cluster ID             b45344c6-3506-be6d-b88b-b326660cf3d0
+HA Enabled             true
+HA Cluster             https://vault-0.vault-internal:8201
+HA Mode                standby
+Active Node Address    http://10.112.128.8:8200
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-2 -- vault status
+Key                    Value
+---                    -----
+Seal Type              shamir
+Initialized            true
+Sealed                 false
+Total Shares           5
+Threshold              3
+Version                1.15.2
+Build Date             2023-11-06T11:33:28Z
+Storage Type           consul
+Cluster Name           vault-cluster-b19dcecc
+Cluster ID             b45344c6-3506-be6d-b88b-b326660cf3d0
+HA Enabled             true
+HA Cluster             https://vault-0.vault-internal:8201
+HA Mode                standby
+Active Node Address    http://10.112.128.8:8200
+[user@rocky9 lab-13]$ 
 ```
  
 ---
@@ -577,7 +641,7 @@ Code: 400. Errors:
 ```
 
 ```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault auth list
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault auth list
 Error listing enabled authentications: Error making API request.
 
 URL: GET http://127.0.0.1:8200/v1/sys/auth
@@ -585,7 +649,7 @@ Code: 403. Errors:
 
 * permission denied
 command terminated with exit code 2
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ 
 ```
 
 ---
@@ -598,7 +662,7 @@ Token (will be hidden):
 ```
 
 ```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault login
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault login
 Token (will be hidden): 
 Success! You are now authenticated. The token information displayed below
 is already stored in the token helper. You do NOT need to run "vault login"
@@ -606,14 +670,14 @@ again. Future Vault requests will automatically use this token.
 
 Key                  Value
 ---                  -----
-token                hvs.c3RJZrHaAYeWzIHdl0r07aoJ
-token_accessor       PdlCOFBqrggDgzkFg7po3YoR
+token                hvs.S39d9xe1EEXLTAnvFgz0fuC1
+token_accessor       awM0XRV1aIYmDzVFpC0U5BP9
 token_duration       ∞
 token_renewable      false
 token_policies       ["root"]
 identity_policies    []
 policies             ["root"]
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ 
 ```
 
 * Вывод после логина добавьте в README.md
@@ -624,11 +688,11 @@ kubectl exec -it vault-0 -- vault auth list
 ```
 
 ```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault auth list
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault auth list
 Path      Type     Accessor               Description                Version
 ----      ----     --------               -----------                -------
-token/    token    auth_token_b9ac5edb    token based credentials    n/a
-[user@redos lab-13]$ 
+token/    token    auth_token_3cdd5f14    token based credentials    n/a
+[user@rocky9 lab-13]$ 
 ```
 
 * Вывод сохранить в README.md
@@ -647,32 +711,42 @@ kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
 ```
 
 ```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault secrets enable --path=otus kv
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault secrets enable --path=otus kv
 Success! Enabled the kv secrets engine at: otus/
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault secrets list --detailed
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault secrets list --detailed
 Path          Plugin       Accessor              Default TTL    Max TTL    Force No Cache    Replication    Seal Wrap    External Entropy Access    Options    Description                                                UUID                                    Version    Running Version          Running SHA256    Deprecation Status
 ----          ------       --------              -----------    -------    --------------    -----------    ---------    -----------------------    -------    -----------                                                ----                                    -------    ---------------          --------------    ------------------
-cubbyhole/    cubbyhole    cubbyhole_fae8fc5b    n/a            n/a        false             local          false        false                      map[]      per-token private secret storage                           91dc5554-93e1-8525-6c06-f955e2e017bc    n/a        v1.15.2+builtin.vault    n/a               n/a
-identity/     identity     identity_c103bf20     system         system     false             replicated     false        false                      map[]      identity store                                             33305d63-0128-e543-0d8b-1e3b282501d5    n/a        v1.15.2+builtin.vault    n/a               n/a
-otus/         kv           kv_4a926955           system         system     false             replicated     false        false                      map[]      n/a                                                        029ef552-112e-9c6a-f2a0-808a18ad1e8b    n/a        v0.16.1+builtin          n/a               supported
-sys/          system       system_0b8536af       n/a            n/a        false             replicated     true         false                      map[]      system endpoints used for control, policy and debugging    f484970f-6b37-055c-acba-0a0a9611e824    n/a        v1.15.2+builtin.vault    n/a               n/a
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp'
+cubbyhole/    cubbyhole    cubbyhole_0d0e5080    n/a            n/a        false             local          false        false                      map[]      per-token private secret storage                           86d82095-8fcf-4351-1ef6-f39490eaaec6    n/a        v1.15.2+builtin.vault    n/a               n/a
+identity/     identity     identity_3de25df9     system         system     false             replicated     false        false                      map[]      identity store                                             f3c222c7-c508-9770-1469-a5ee0d912b94    n/a        v1.15.2+builtin.vault    n/a               n/a
+otus/         kv           kv_6c46427d           system         system     false             replicated     false        false                      map[]      n/a                                                        b9139d6e-d6e6-c06a-37a2-06fa88abfff5    n/a        v0.16.1+builtin          n/a               supported
+sys/          system       system_eed4f82b       n/a            n/a        false             replicated     true         false                      map[]      system endpoints used for control, policy and debugging    3a50dec2-c0bc-a9f7-61ca-8eae814b9bd7    n/a        v1.15.2+builtin.vault    n/a               n/a
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp'
 Success! Data written to: otus/otus-ro/config
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztp'
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztp'
 Success! Data written to: otus/otus-rw/config
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault read otus/otus-ro/config
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault read otus/otus-ro/config
 Key                 Value
 ---                 -----
 refresh_interval    768h
 password            h7sgm4j9ztp
 username            otus
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
 ====== Data ======
 Key         Value
 ---         -----
 password    h7sgm4j9ztp
 username    otus
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ 
 ```
 
 
@@ -680,24 +754,26 @@ username    otus
 
 ---
 
-##  Включим авторизацию черерз k8s
+##  Включим авторизацию через k8s
 ```bash
 kubectl exec -it vault-0 -- vault auth enable kubernetes
 kubectl exec -it vault-0 -- vault auth list
 ```
 
 ```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault auth enable kubernetes
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault auth enable kubernetes
 Success! Enabled kubernetes auth method at: kubernetes/
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault auth list
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault auth list
 Path           Type          Accessor                    Description                Version
 ----           ----          --------                    -----------                -------
-kubernetes/    kubernetes    auth_kubernetes_46cd2bd4    n/a                        n/a
-token/         token         auth_token_b9ac5edb         token based credentials    n/a
-[user@redos lab-13]$ 
+kubernetes/    kubernetes    auth_kubernetes_5c8e911f    n/a                        n/a
+token/         token         auth_token_3cdd5f14         token based credentials    n/a
+[user@rocky9 lab-13]$ 
 ```
 
-* Обновленный список авторизаций - добавить в  README.md
+* Обновленный список авторизаций - добавить в README.md
 
 ---
 ##  Создадим yaml для ClusterRoleBinding
@@ -715,9 +791,9 @@ roleRef:
   kind: ClusterRole
   name: system:auth-delegator
 subjects:
-- kind: ServiceAccount
-  name: vault-auth
-  namespace: default
+  - kind: ServiceAccount
+    name: vault-auth
+    namespace: default
 EOF
 * файл должен быть приложен в ДЗ
 ```
@@ -734,9 +810,9 @@ roleRef:
   kind: ClusterRole
   name: system:auth-delegator
 subjects:
-- kind: ServiceAccount
-  name: vault-auth
-  namespace: default
+  - kind: ServiceAccount
+    name: vault-auth
+    namespace: default
 ```
 
 ---
@@ -747,19 +823,19 @@ subjects:
 $ kubectl create serviceaccount vault-auth
 
 # Update the 'vault-auth' service account
-$ kubectl apply --filename vault-auth-service-account.yml
+$ kubectl apply -f ./vault-auth-service-account.yml
 ```
 
 ```
-[user@redos lab-13]$ kubectl create serviceaccount vault-auth
+[user@rocky9 lab-13]$ kubectl create serviceaccount vault-auth
 serviceaccount/vault-auth created
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ 
 ```
 
 ```
-[user@redos lab-13]$ kubectl apply -f ./vault-auth-service-account.yml 
+[user@rocky9 lab-13]$ kubectl apply -f ./vault-auth-service-account.yml 
 clusterrolebinding.rbac.authorization.k8s.io/role-tokenreview-binding created
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ 
 ```
 
 ---
@@ -778,16 +854,16 @@ export K8S_HOST=$(kubectl cluster-info | grep 'Kubernetes control plane' | awk '
 ```
 
 ```
-[user@redos lab-13]$ export VAULT_SA_NAME=$(kubectl get sa vault-auth -o jsonpath="{.secrets[*]['name']}")
-[user@redos lab-13]$ export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
-[user@redos lab-13]$ export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
-[user@redos lab-13]$ export K8S_HOST=$(more ~/.kube/config | grep server |awk '/http/ {print $NF}')
-[user@redos lab-13]$ 
-```
-
-```
-[user@redos lab-13]$ export K8S_HOST=$(kubectl cluster-info | grep 'Kubernetes control plane' | awk '/https/ {print $NF}' | sed 's/\x1b\[[0-9;]*m//g' )
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ export VAULT_SA_NAME=$(kubectl get sa vault-auth -o jsonpath="{.secrets[*]['name']}")
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ export K8S_HOST=$(more ~/.kube/config | grep server |awk '/http/ {print $NF}')
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ export K8S_HOST=$(kubectl cluster-info | grep 'Kubernetes control plane' | awk '/https/ {print $NF}' | sed 's/\x1b\[[0-9;]*m//g' )
+[user@rocky9 lab-13]$ 
 ```
 
 * Обратите внимание на конструкцию ```sed ’s/\x1b\[[0-9;]*m//g```, что по вашему она делает?
@@ -804,12 +880,12 @@ kubernetes_ca_cert="$SA_CA_CRT"
 ```
 
 ```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault write auth/kubernetes/config \
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault write auth/kubernetes/config \
 token_reviewer_jwt="$SA_JWT_TOKEN" \
 kubernetes_host="$K8S_HOST" \
 kubernetes_ca_cert="$SA_CA_CRT"
 Success! Data written to: auth/kubernetes/config
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ 
 ```
 
 ---
@@ -819,11 +895,11 @@ Success! Data written to: auth/kubernetes/config
 ```bash
 tee otus-policy.hcl <<EOF
 path "otus/otus-ro/*" {
-capabilities = ["read", "list"]
+  capabilities = ["read", "list"]
 }
 
 path "otus/otus-rw/*" {
-capabilities = ["read", "create", "list"]
+  capabilities = ["read", "create", "list"]
 }
 EOF
 ```
@@ -831,19 +907,19 @@ EOF
 ```
 [user@rocky9 lab-13]$ tee otus-policy.hcl <<EOF
 path "otus/otus-ro/*" {
-capabilities = ["read", "list"]
+  capabilities = ["read", "list"]
 }
 
 path "otus/otus-rw/*" {
-capabilities = ["read", "create", "list"]
+  capabilities = ["read", "create", "list"]
 }
 EOF
 path "otus/otus-ro/*" {
-capabilities = ["read", "list"]
+  capabilities = ["read", "list"]
 }
 
 path "otus/otus-rw/*" {
-capabilities = ["read", "create", "list"]
+  capabilities = ["read", "create", "list"]
 }
 [user@rocky9 lab-13]$ 
 ```
@@ -863,22 +939,16 @@ bound_service_account_namespaces=default policies=otus-policy  ttl=24h
 ```
 
 ```
-[user@redos lab-13]$ kubectl cp otus-policy.hcl vault-0:./tmp/
-[user@redos lab-13]$ 
-```
-
-```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault policy write otus-policy /tmp/otus-policy.hcl
+[user@rocky9 lab-13]$ kubectl cp otus-policy.hcl vault-0:/tmp/
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault policy write otus-policy /tmp/otus-policy.hcl
 Success! Uploaded policy: otus-policy
-[user@redos lab-13]$ 
-```
-
-```
-[user@redos lab-13]$ kubectl exec -it vault-0 -- vault write auth/kubernetes/role/otus  \
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault write auth/kubernetes/role/otus  \
 bound_service_account_names=vault-auth         \
 bound_service_account_namespaces=default policies=otus-policy  ttl=24h
 Success! Data written to: auth/kubernetes/role/otus
-[user@redos lab-13]$ 
+[user@rocky9 lab-13]$ 
 ```
 
 ---
@@ -893,8 +963,9 @@ apk add curl jq
 ```
 
 ```
-[user@redos lab-13]$ kubectl run tmp --rm -i --tty --image alpine:3.7 --overrides='{ "spec": { "serviceAccount": "vault-auth" }  }'
+[user@rocky9 lab-13]$ kubectl run tmp --rm -i --tty --image alpine:3.7 --overrides='{ "spec": { "serviceAccount": "vault-auth" }  }'
 If you don't see a command prompt, try pressing enter.
+/ # 
 / # apk add curl jq
 fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/main/x86_64/APKINDEX.tar.gz
 fetch http://dl-cdn.alpinelinux.org/alpine/v3.7/community/x86_64/APKINDEX.tar.gz
@@ -921,13 +992,14 @@ TOKEN=$(curl -k -s --request POST  --data '{"jwt": "'$KUBE_TOKEN'", "role": "tes
 
 ```
 / # VAULT_ADDR=http://vault:8200
+/ # 
 / # KUBE_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-/ # curl --request POST  --data '{"jwt": "'$KUBE_TOKEN'", "role": "otus"}' $VAUL
-T_ADDR/v1/auth/kubernetes/login | jq
+/ # 
+/ # curl --request POST  --data '{"jwt": "'$KUBE_TOKEN'", "role": "otus"}' $VAULT_ADDR/v1/auth/kubernetes/login | jq
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-{ 0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-  "request_id": "144c93f1-1e0b-2da8-e0dc-3471f247d3e0",
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0{
+  "request_id": "e83b7a8a-8d0c-7bf5-76cb-2f8e1c4929af",
   "lease_id": "",
   "renewable": false,
   "lease_duration": 0,
@@ -935,8 +1007,8 @@ T_ADDR/v1/auth/kubernetes/login | jq
   "wrap_info": null,
   "warnings": null,
   "auth": {
-    "client_token": "hvs.CAESIAv9d1Y3k_hkP1atOsZuJg2seadzcBZQVGt4FiQ7OAPVGh4KHGh2cy4wUkZQWjNoNHhKdEswT2ZRdlhMV0RmSnY",
-    "accessor": "g0vEDE0btlespgsoQFkEvahp",
+    "client_token": "hvs.CAESIPa5XmJ0JPrkaEZBj31uhUcqiJ12kG0XvEtxVND3SA2eGh4KHGh2cy5YRzNpVUJiN0FUWEVodHA5QnluVUphRWU",
+    "accessor": "o3UQ0ZVhlAGEm6aYY6q4FpDm",
     "policies": [
       "default",
       "otus-policy"
@@ -950,21 +1022,20 @@ T_ADDR/v1/auth/kubernetes/login | jq
       "service_account_name": "vault-auth",
       "service_account_namespace": "default",
       "service_account_secret_name": "",
-      "service_account_uid": "9f1c64e5-58fc-4319-a1ca-47f5702399e2"
+      "service_account_uid": "f1d7e441-c410-41cb-ac9f-51dc6085536a"
     },
     "lease_duration": 86400,
     "renewable": true,
-    "entity_id": "f1d17a7f-ec53-3241-2fc8-7c8998e59fd7",
+    "entity_id": "e215fb49-f409-1bda-f409-e587a95c625d",
     "token_type": "service",
     "orphan": true,
     "mfa_requirement": null,
     "num_uses": 0
   }
 }
-100  1714  100   749  100   965   6294   8109 --:--:-- --:--:-- --:--:-- 14525
-/ # TOKEN=$(curl -k -s --request POST  --data '{"jwt": "'$KUBE_TOKEN'", "role": 
-"test"}' $VAULT_ADDR/v1/auth/kubernetes/login | jq '.auth.client_token' | awk -F
-\" '{print $2}')
+100  1714  100   749  100   965   7271   9368 --:--:-- --:--:-- --:--:-- 16640
+/ # 
+/ # TOKEN=$(curl -k -s --request POST --data '{"jwt": "'$KUBE_TOKEN'", "role": "otus"}' $VAULT_ADDR/v1/auth/kubernetes/login | jq '.auth.client_token' | awk -F\" '{print $2}')
 / # 
 ```
 
@@ -978,11 +1049,32 @@ T_ADDR/v1/auth/kubernetes/login | jq
 curl --header "X-Vault-Token:s.pPjvLHcbKsNoWo7zAAuhMoVK" $VAULT_ADDR/v1/otus/otus-ro/config
 curl --header "X-Vault-Token:s.pPjvLHcbKsNoWo7zAAuhMoVK" $VAULT_ADDR/v1/otus/otus-rw/config
 ```
+
+```
+/ # curl --header "X-Vault-Token:$TOKEN" $VAULT_ADDR/v1/otus/otus-ro/config
+{"request_id":"4216cba9-8d22-098b-1f61-9fcf8ad2cd3c","lease_id":"","renewable":false,"lease_duration":2764800,"data":{"password":"h7sgm4j9ztp","username":"otus"},"wrap_info":null,"warnings":null,"auth":null}
+/ # 
+/ # curl --header "X-Vault-Token:$TOKEN" $VAULT_ADDR/v1/otus/otus-rw/config
+{"request_id":"52d8847f-3cfa-4b40-04bd-48f08fe275f5","lease_id":"","renewable":false,"lease_duration":2764800,"data":{"password":"h7sgm4j9ztp","username":"otus"},"wrap_info":null,"warnings":null,"auth":null}
+/ # 
+```
+
 * проверим запись
 ```bash
 curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:s.pPjvLHcbKsNoWo7zAAuhMoVK" $VAULT_ADDR/v1/otus/otus-ro/config
 curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:s.pPjvLHcbKsNoWo7zAAuhMoVK" $VAULT_ADDR/v1/otus/otus-rw/config
 curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:s.pPjvLHcbKsNoWo7zAAuhMoVK" $VAULT_ADDR/v1/otus/otus-rw/config1
+```
+
+```
+/ # curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:$TOKEN" $VAULT_ADDR/v1/otus/otus-ro/config
+{"errors":["1 error occurred:\n\t* permission denied\n\n"]}
+/ # 
+/ # curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:$TOKEN" $VAULT_ADDR/v1/otus/otus-rw/config
+{"errors":["1 error occurred:\n\t* permission denied\n\n"]}
+/ # 
+/ # curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:$TOKEN" $VAULT_ADDR/v1/otus/otus-rw/config1
+/ # 
 ```
 
 ---
@@ -991,6 +1083,46 @@ curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:s.pPjvLHcb
 * Почему мы смогли записать otus-rw/config1 но не смогли otus-rw/config
 * Измените политику так, чтобы можно было менять otus-rw/config
 * Ответы на вопросы добавить в README.md
+
+
+Мы смогли записать otus-rw/config1, но не смогли otus-rw/config, так как в политике роли otus/otus-rw 'read', 'create', 'list'.
+Для того чтобы была возможность записать otus-rw/config, добавим в политику 'update'.
+
+В новом терминале создадим новый файл otus-policy.hcl и обновим политику в Vault:
+```
+[user@rocky9 lab-13]$ tee otus-policy1.hcl <<EOF
+path "otus/otus-ro/*" {
+  capabilities = ["read", "list"]
+}
+
+path "otus/otus-rw/*" {
+  capabilities = ["read", "update", "create", "list"]
+}
+EOF
+path "otus/otus-ro/*" {
+  capabilities = ["read", "list"]
+}
+
+path "otus/otus-rw/*" {
+  capabilities = ["read", "update", "create", "list"]
+}
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl cp ./otus-policy1.hcl vault-0:/tmp/
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault policy write otus-policy /tmp/otus-policy1.hcl
+Success! Uploaded policy: otus-policy
+[user@rocky9 lab-13]$ 
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault write auth/kubernetes/role/otus  \
+bound_service_account_names=vault-auth         \
+bound_service_account_namespaces=default policies=otus-policy  ttl=24h
+Success! Data written to: auth/kubernetes/role/otus
+[user@rocky9 lab-13]$ 
+```
+
+Снова проверим запись otus-rw/config:
+```
+/ # curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:$TOKEN" $VAULT_ADDR/v1/otus/otus-rw/config
+/ # 
+```
 
 ---
 
@@ -1019,13 +1151,85 @@ cd vault-guides/identity/vault-agent-k8s-demo
 
 ```bash
     # Create a ConfigMap, example-vault-agent-config
-    $ kubectl create configmap example-vault-agent-config --from-file=./configs-k8s/
+    #$ kubectl create configmap example-vault-agent-config --from-file=./configs-k8s/
+    $ kubectl create configmap example-vault-agent-config --from-file=./configmap.yaml
 
     # View the created ConfigMap
     $ kubectl get configmap example-vault-agent-config -o yaml
 
     # Finally, create vault-agent-example Pod
-    $ kubectl apply -f example-k8s-spec.yml --record
+    $ kubectl apply -f example-k8s-spec.yaml --record
+```
+
+```
+[user@rocky9 vault-agent-k8s-demo]$ kubectl create configmap example-vault-agent-config --from-file=./configmap.yaml
+configmap/example-vault-agent-config created
+[user@rocky9 vault-agent-k8s-demo]$ 
+```
+
+```
+[user@rocky9 vault-agent-k8s-demo]$ kubectl get configmap example-vault-agent-config -o yaml
+apiVersion: v1
+data:
+  configmap.yaml: |
+    apiVersion: v1
+    data:
+      vault-agent-config.hcl: |
+        # Comment this out if running as sidecar instead of initContainer
+        exit_after_auth = true
+
+        pid_file = "/home/vault/pidfile"
+
+        auto_auth {
+            method "kubernetes" {
+                mount_path = "auth/kubernetes"
+                config = {
+                    role = "example"
+                }
+            }
+
+            sink "file" {
+                config = {
+                    path = "/home/vault/.vault-token"
+                }
+            }
+        }
+
+        template {
+        destination = "/etc/secrets/index.html"
+        contents = <<EOT
+        <html>
+        <body>
+        <p>Some secrets:</p>
+        {{- with secret "secret/data/myapp/config" }}
+        <ul>
+        <li><pre>username: {{ .Data.data.username }}</pre></li>
+        <li><pre>password: {{ .Data.data.password }}</pre></li>
+        </ul>
+        {{ end }}
+        </body>
+        </html>
+        EOT
+        }
+    kind: ConfigMap
+    metadata:
+      name: example-vault-agent-config
+      namespace: default
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2024-01-16T20:01:53Z"
+  name: example-vault-agent-config
+  namespace: default
+  resourceVersion: "44437"
+  uid: 8a6ea294-efce-4584-8b44-ec943cb69b81
+[user@rocky9 vault-agent-k8s-demo]$ 
+```
+
+```
+[user@rocky9 vault-agent-k8s-demo]$ kubectl apply -f ./example-k8s-spec.yaml --record
+Flag --record has been deprecated, --record will be removed in the future
+pod/vault-agent-example created
+[user@rocky9 vault-agent-k8s-demo]$ 
 ```
 
 ---
@@ -1080,7 +1284,7 @@ kubectl exec -it vault-0 -- vault write pki_int/intermediate/set-signed certific
    
 ---
 ## Создадим и отзовем новые сертификаты
-* Создадим роль для выдачи с    ертификатов
+* Создадим роль для выдачи сертификатов
 ```bash
 kubectl exec -it vault-0 -- vault write pki_int/roles/example-dot-ru \  
 allowed_domains="example.ru" allow_subdomains=true   max_ttl="720h"
