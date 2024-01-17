@@ -8,7 +8,7 @@ data:
 
     auto_auth {
         method "kubernetes" {
-            mount_path = "auth/kubernetes/config"
+            mount_path = "auth/kubernetes"
             config = {
                 role = "otus"
             }

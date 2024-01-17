@@ -1088,7 +1088,7 @@ curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:s.pPjvLHcb
 Мы смогли записать otus-rw/config1, но не смогли otus-rw/config, так как в политике роли otus/otus-rw 'read', 'create', 'list'.
 Для того чтобы была возможность записать otus-rw/config, добавим в политику 'update'.
 
-В новом терминале создадим новый файл otus-policy.hcl и обновим политику в Vault:
+В новом терминале создадим новый файл otus-policy1.hcl и обновим политику в Vault:
 ```
 [user@rocky9 lab-13]$ tee otus-policy1.hcl <<EOF
 path "otus/otus-ro/*" {
@@ -1118,7 +1118,7 @@ Success! Data written to: auth/kubernetes/role/otus
 [user@rocky9 lab-13]$ 
 ```
 
-Снова проверим запись otus-rw/config:
+Снова проверим запись otus-rw/config в поде tmp:
 ```
 / # curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:$TOKEN" $VAULT_ADDR/v1/otus/otus-rw/config
 / # 
@@ -1139,7 +1139,7 @@ Success! Data written to: auth/kubernetes/role/otus
 
 ```bash 
 git clone https://github.com/hashicorp/vault-guides.git
-cd vault-guides/identity/vault-agent-k8s-demo
+cd ./vault-guides/identity/vault-agent-k8s-demo
 ```
 * В каталоге configs-k8s скорректируйте конфиги с учетом ранее созданых ролей и секретов
 * Проверьте и скорректируйте конфиг example-k8s-spec.yml
