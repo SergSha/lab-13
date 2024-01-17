@@ -656,7 +656,7 @@ command terminated with exit code 2
 ##  Залогинимся в vault (у нас есть root token)
   
 ```bash
-kubectl exec -it vault-0 --  vault login
+kubectl exec -it vault-0 -- vault login
 
 Token (will be hidden):
 ```
@@ -987,7 +987,7 @@ OK: 7 MiB in 19 packages
 VAULT_ADDR=http://vault:8200
 KUBE_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 curl --request POST  --data '{"jwt": "'$KUBE_TOKEN'", "role": "otus"}' $VAULT_ADDR/v1/auth/kubernetes/login | jq
-TOKEN=$(curl -k -s --request POST  --data '{"jwt": "'$KUBE_TOKEN'", "role": "test"}' $VAULT_ADDR/v1/auth/kubernetes/login | jq '.auth.client_token' | awk -F\" '{print $2}')
+TOKEN=$(curl -k -s --request POST  --data '{"jwt": "'$KUBE_TOKEN'", "role": "otus"}' $VAULT_ADDR/v1/auth/kubernetes/login | jq '.auth.client_token' | awk -F\" '{print $2}')
 ```
 
 ```
@@ -1151,8 +1151,7 @@ cd ./vault-guides/identity/vault-agent-k8s-demo
 
 ```bash
     # Create a ConfigMap, example-vault-agent-config
-    #$ kubectl create configmap example-vault-agent-config --from-file=./configs-k8s/
-    $ kubectl create configmap example-vault-agent-config --from-file=./configmap.yaml
+    $ kubectl create -f configmap.yaml
 
     # View the created ConfigMap
     $ kubectl get configmap example-vault-agent-config -o yaml
@@ -1162,7 +1161,7 @@ cd ./vault-guides/identity/vault-agent-k8s-demo
 ```
 
 ```
-[user@rocky9 vault-agent-k8s-demo]$ kubectl create configmap example-vault-agent-config --from-file=./configmap.yaml
+[user@rocky9 vault-agent-k8s-demo]$ kubectl create -f configmap.yaml
 configmap/example-vault-agent-config created
 [user@rocky9 vault-agent-k8s-demo]$ 
 ```

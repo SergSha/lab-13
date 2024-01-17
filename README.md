@@ -119,3 +119,92 @@ Events:       <none>
 <img src="pics/screen-001.png" alt="screen-001.png" />
 
 Можно сделать вывод, что развёрнутый kubernetes кластер работает должным образом.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+helm install consul ./consul-helm/
+helm install vault ./vault-helm/
+
+kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3
+---
+Unseal Key 1: SxGjcXeqDXFMXC3bYUvuymBbtjs5tq9C0xw9bDvNpfJ/
+Unseal Key 2: j0w47uZIYODhdm3UZjnIF8XCo+C6t7mEEf8ZE/pnTYB4
+Unseal Key 3: eQy6Phhn4LEXq2KEQC5aUmGxz+gPX+6We5mOojmj6lqD
+Unseal Key 4: Vnx3s9/hU4xT41OodFb0/3vTqEDiNwVBQmWjLX39Svq+
+Unseal Key 5: BUD1uKP3LJKFRvswlkqLEOU0BsQRrNsRV3Rls01sfiwS
+
+Initial Root Token: hvs.61gFjOcaoapfyBmHXCFrj4vm
+---
+
+kubectl exec -it vault-0 -- vault operator unseal 'SxGjcXeqDXFMXC3bYUvuymBbtjs5tq9C0xw9bDvNpfJ/'
+kubectl exec -it vault-1 -- vault operator unseal 'SxGjcXeqDXFMXC3bYUvuymBbtjs5tq9C0xw9bDvNpfJ/'
+kubectl exec -it vault-2 -- vault operator unseal 'SxGjcXeqDXFMXC3bYUvuymBbtjs5tq9C0xw9bDvNpfJ/'
+kubectl exec -it vault-0 -- vault operator unseal 'j0w47uZIYODhdm3UZjnIF8XCo+C6t7mEEf8ZE/pnTYB4'
+kubectl exec -it vault-1 -- vault operator unseal 'j0w47uZIYODhdm3UZjnIF8XCo+C6t7mEEf8ZE/pnTYB4'
+kubectl exec -it vault-2 -- vault operator unseal 'j0w47uZIYODhdm3UZjnIF8XCo+C6t7mEEf8ZE/pnTYB4'
+kubectl exec -it vault-0 -- vault operator unseal 'eQy6Phhn4LEXq2KEQC5aUmGxz+gPX+6We5mOojmj6lqD'
+kubectl exec -it vault-1 -- vault operator unseal 'eQy6Phhn4LEXq2KEQC5aUmGxz+gPX+6We5mOojmj6lqD'
+kubectl exec -it vault-2 -- vault operator unseal 'eQy6Phhn4LEXq2KEQC5aUmGxz+gPX+6We5mOojmj6lqD'
+
+kubectl exec -it vault-0 -- vault login
+kubectl exec -it vault-0 -- vault auth list
+
+kubectl exec -it vault-0 -- vault secrets enable --path=otus kv
+kubectl exec -it vault-0 -- vault secrets list --detailed
+kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp'
+kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztp'
+kubectl exec -it vault-0 -- vault read otus/otus-ro/config
+kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
+
+kubectl exec -it vault-0 -- vault auth enable kubernetes
+kubectl exec -it vault-0 -- vault auth list
+
+kubectl create serviceaccount vault-auth
+kubectl apply -f ./vault-auth-service-account.yml
+
+export VAULT_SA_NAME=$(kubectl get sa vault-auth -o jsonpath="{.secrets[*]['name']}")
+export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
+export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
+export K8S_HOST=$(more ~/.kube/config | grep server |awk '/http/ {print $NF}')
+export K8S_HOST=$(kubectl cluster-info | grep 'Kubernetes control plane' | awk '/https/ {print $NF}' | sed 's/\x1b\[[0-9;]*m//g' )
+
+kubectl exec -it vault-0 -- vault write auth/kubernetes/config token_reviewer_jwt="$SA_JWT_TOKEN" kubernetes_host="$K8S_HOST" kubernetes_ca_cert="$SA_CA_CRT"
+kubectl cp otus-policy.hcl vault-0:/tmp/
+kubectl exec -it vault-0 -- vault policy write otus-policy /tmp/otus-policy.hcl
+kubectl exec -it vault-0 -- vault write auth/kubernetes/role/otus bound_service_account_names=vault-auth bound_service_account_namespaces=default policies=otus-policy  ttl=24h
+
+cd ./vault-guides/identity/vault-agent-k8s-demo
+kubectl create configmap example-vault-agent-config --from-file=./configmap.yaml
+kubectl get configmap example-vault-agent-config -o yaml
+kubectl apply -f example-k8s-spec.yaml --record
+
+kubectl get pods
+
+kubectl describe pods vault-agent-example
+
+kubectl logs vault-agent-example
+
+kubectl get cm
+
+kubectl describe cm example-vault-agent-config
+
+cd ~/otus/lab-13/
+terraform destroy -auto-approve
+
+git status
+git add .
+git commit -m 'edit 00-Homework.md, configmap.yaml'
+git push -u origin main
+git status
