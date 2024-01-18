@@ -2,26 +2,18 @@ apiVersion: v1
 data:
   vault-agent-config.hcl: |
     # Comment this out if running as sidecar instead of initContainer
-    exit_after_auth = true
+    exit_after_auth = false
 
-    pid_file = "/home/vault/pidfile"
+    #pid_file = "/home/vault/pidfile"
+    pid_file = "/tmp/.pidfile"
 
     auto_auth {
-        method {
-            type = "kubernetes"
+        method "kubernetes" {
             mount_path = "auth/kubernetes"
             config = {
                 role = "otus"
             }
         }
-
-    #auto_auth {
-    #    method "kubernetes" {
-    #        mount_path = "auth/kubernetes"
-    #        config = {
-    #            role = "otus"
-    #        }
-    #    }
 
         sink "file" {
             config = {
@@ -36,7 +28,7 @@ data:
     <html>
     <body>
     <p>Some secrets:</p>
-    {{- with secret "secret/data/myapp/config" }}
+    {{- with secret "otus/otus-rw/config" }}
     <ul>
     <li><pre>username: {{ .Data.data.username }}</pre></li>
     <li><pre>password: {{ .Data.data.password }}</pre></li>
