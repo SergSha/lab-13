@@ -7,12 +7,21 @@ data:
     pid_file = "/home/vault/pidfile"
 
     auto_auth {
-        method "kubernetes" {
+        method {
+            type = "kubernetes"
             mount_path = "auth/kubernetes"
             config = {
                 role = "otus"
             }
         }
+
+    #auto_auth {
+    #    method "kubernetes" {
+    #        mount_path = "auth/kubernetes"
+    #        config = {
+    #            role = "otus"
+    #        }
+    #    }
 
         sink "file" {
             config = {
