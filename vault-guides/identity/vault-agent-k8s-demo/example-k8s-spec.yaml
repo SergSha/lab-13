@@ -23,7 +23,7 @@ spec:
     - "-log-level=debug"
     env:
     - name: VAULT_ADDR
-      value: http://vault:8200
+      value: http://10.112.128.1:8200
     image: hashicorp/vault:latest
     name: vault-agent
     volumeMounts:

@@ -781,6 +781,12 @@ token/         token         auth_token_3cdd5f14         token based credentials
 - vault-auth-service-account.yml
 
 ```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-auth
+  namespace: default
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -800,6 +806,12 @@ EOF
 
 ```
 [user@rocky9 lab-13]$ vi vault-auth-service-account.yml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-auth
+  namespace: default
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -819,22 +831,48 @@ subjects:
 ##  Создадим Service Account vault-auth и применим ClusterRoleBinding
 
 ```bash
-# Create a service account, 'vault-auth'
-$ kubectl create serviceaccount vault-auth
-
 # Update the 'vault-auth' service account
 $ kubectl apply -f ./vault-auth-service-account.yml
 ```
 
 ```
-[user@rocky9 lab-13]$ kubectl create serviceaccount vault-auth
-serviceaccount/vault-auth created
+[user@rocky9 lab-13]$ kubectl apply -f ./vault-auth-service-account.yml 
+clusterrolebinding.rbac.authorization.k8s.io/role-tokenreview-binding created
 [user@rocky9 lab-13]$ 
 ```
 
+---
+##  Создадим секрет vault-auth-secret
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vault-auth-secret
+  annotations:
+    kubernetes.io/service-account.name: vault-auth
+type: kubernetes.io/service-account-token
 ```
-[user@rocky9 lab-13]$ kubectl apply -f ./vault-auth-service-account.yml 
-clusterrolebinding.rbac.authorization.k8s.io/role-tokenreview-binding created
+
+```bash
+kubectl apply -f ./vault-auth-secret.yaml
+
+```
+
+```
+[user@rocky9 lab-13]$ vi ./vault-auth-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vault-auth-secret
+  annotations:
+    kubernetes.io/service-account.name: vault-auth
+type: kubernetes.io/service-account-token
+```
+
+```
+[user@rocky9 lab-13]$ kubectl apply -f ./vault-auth-secret.yaml
+secret/vault-auth-secret created
 [user@rocky9 lab-13]$ 
 ```
 
@@ -845,6 +883,9 @@ clusterrolebinding.rbac.authorization.k8s.io/role-tokenreview-binding created
 
 ```bash
 export VAULT_SA_NAME=$(kubectl get sa vault-auth -o jsonpath="{.secrets[*]['name']}")
+* alternative: export VAULT_SA_NAME=$(kubectl get secrets --output=json \
+    | jq -r '.items[].metadata | select(.name|startswith("vault-auth-")).name')
+
 export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
 export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
 export K8S_HOST=$(more ~/.kube/config | grep server |awk '/http/ {print $NF}')
