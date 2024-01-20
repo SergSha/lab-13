@@ -161,7 +161,7 @@ kubectl exec -it vault-2 -- vault operator unseal 'eQy6Phhn4LEXq2KEQC5aUmGxz+gPX
 kubectl exec -it vault-0 -- vault login
 kubectl exec -it vault-0 -- vault auth list
 
-kubectl exec -it vault-0 -- vault secrets enable --path=otus kv
+kubectl exec -it vault-0 -- vault secrets enable --version=2 --path=otus kv
 kubectl exec -it vault-0 -- vault secrets list --detailed
 kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp'
 kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztp'
@@ -249,10 +249,15 @@ kubectl exec -it vault-2 -- vault operator unseal 'fWNj4Mrd8jO6oQsySfrCEE2j2sU9a
 kubectl exec -it vault-0 -- vault login
 kubectl exec -it vault-0 -- vault auth list
 
-kubectl exec -it vault-0 -- vault secrets enable --path=otus kv
+kubectl exec -it vault-0 -- vault secrets enable --version=2 --path=otus kv
 kubectl exec -it vault-0 -- vault secrets list --detailed
-kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp'
+kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp' ttl='30s'
 kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztp'
+
+kubectl exec -it vault-0 -- vault kv put secret/myapp/config username='appuser' password='suP3rsec(et!' ttl='30s'
+
+
+
 kubectl exec -it vault-0 -- vault read otus/otus-ro/config
 kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
 
@@ -268,19 +273,30 @@ export VAULT_SA_NAME=$(kubectl get sa vault-auth -o jsonpath="{.secrets[*]['name
     | jq -r '.items[].metadata | select(.name|startswith("vault-auth-")).name')
 
 export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
+export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o 'go-template={{ .data.token }}' | base64 --decode)
+
 export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
+
+
 export K8S_HOST=$(more ~/.kube/config | grep server |awk '/http/ {print $NF}')
 export K8S_HOST=$(kubectl cluster-info | grep 'Kubernetes control plane' | awk '/https/ {print $NF}' | sed 's/\x1b\[[0-9;]*m//g' )
 
 kubectl exec -it vault-0 -- vault write auth/kubernetes/config token_reviewer_jwt="$SA_JWT_TOKEN" kubernetes_host="$K8S_HOST" kubernetes_ca_cert="$SA_CA_CRT"
+
 kubectl cp otus-policy.hcl vault-0:/tmp/
 kubectl exec -it vault-0 -- vault policy write otus-policy /tmp/otus-policy.hcl
-kubectl exec -it vault-0 -- vault write auth/kubernetes/role/otus bound_service_account_names=vault-auth bound_service_account_namespaces=default policies=otus-policy  ttl=24h
+
+kubectl exec -it vault-0 -- \
+     vault write auth/kubernetes/role/otus \
+     bound_service_account_names=vault-auth \
+     bound_service_account_namespaces=default \
+     token_policies=otus-policy  \
+     ttl=24h
 
 cd ./vault-guides/identity/vault-agent-k8s-demo
 kubectl create -f ./configmap.yaml
 kubectl get configmap example-vault-agent-config -o yaml
-kubectl apply -f example-k8s-spec.yaml --record
+kubectl apply -f ./example-k8s-spec.yaml --record
 
 kubectl get pods
 

@@ -702,7 +702,7 @@ token/    token    auth_token_3cdd5f14    token based credentials    n/a
 ## Заведем секреты
 
 ```bash
-kubectl exec -it vault-0 -- vault secrets enable --path=otus kv
+kubectl exec -it vault-0 -- vault secrets enable --version=2 --path=otus kv
 kubectl exec -it vault-0 -- vault secrets list --detailed
 kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp'
 kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztp'
@@ -711,7 +711,7 @@ kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
 ```
 
 ```
-[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault secrets enable --path=otus kv
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault secrets enable --version=2 --path=otus kv
 Success! Enabled the kv secrets engine at: otus/
 [user@rocky9 lab-13]$ 
 [user@rocky9 lab-13]$ 
@@ -935,11 +935,11 @@ Success! Data written to: auth/kubernetes/config
 
 ```bash
 tee otus-policy.hcl <<EOF
-path "otus/otus-ro/*" {
+path "otus/data/otus-ro/*" {
   capabilities = ["read", "list"]
 }
 
-path "otus/otus-rw/*" {
+path "otus/data/otus-rw/*" {
   capabilities = ["read", "create", "list"]
 }
 EOF
@@ -947,19 +947,19 @@ EOF
 
 ```
 [user@rocky9 lab-13]$ tee otus-policy.hcl <<EOF
-path "otus/otus-ro/*" {
+path "otus/data/otus-ro/*" {
   capabilities = ["read", "list"]
 }
 
-path "otus/otus-rw/*" {
+path "otus/data/otus-rw/*" {
   capabilities = ["read", "create", "list"]
 }
 EOF
-path "otus/otus-ro/*" {
+path "otus/data/otus-ro/*" {
   capabilities = ["read", "list"]
 }
 
-path "otus/otus-rw/*" {
+path "otus/data/otus-rw/*" {
   capabilities = ["read", "create", "list"]
 }
 [user@rocky9 lab-13]$ 
@@ -1126,25 +1126,25 @@ curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:s.pPjvLHcb
 * Ответы на вопросы добавить в README.md
 
 
-Мы смогли записать otus-rw/config1, но не смогли otus-rw/config, так как в политике роли otus/otus-rw 'read', 'create', 'list'.
+Мы смогли записать otus-rw/config1, но не смогли otus-rw/config, так как в политике роли otus/data/otus-rw 'read', 'create', 'list'.
 Для того чтобы была возможность записать otus-rw/config, добавим в политику 'update'.
 
 В новом терминале создадим новый файл otus-policy1.hcl и обновим политику в Vault:
 ```
 [user@rocky9 lab-13]$ tee otus-policy1.hcl <<EOF
-path "otus/otus-ro/*" {
+path "otus/data/otus-ro/*" {
   capabilities = ["read", "list"]
 }
 
-path "otus/otus-rw/*" {
+path "otus/data/otus-rw/*" {
   capabilities = ["read", "update", "create", "list"]
 }
 EOF
-path "otus/otus-ro/*" {
+path "otus/data/otus-ro/*" {
   capabilities = ["read", "list"]
 }
 
-path "otus/otus-rw/*" {
+path "otus/data/otus-rw/*" {
   capabilities = ["read", "update", "create", "list"]
 }
 [user@rocky9 lab-13]$ 
@@ -1224,7 +1224,7 @@ data:
             method "kubernetes" {
                 mount_path = "auth/kubernetes"
                 config = {
-                    role = "example"
+                    role = "otus"
                 }
             }
 
@@ -1241,7 +1241,7 @@ data:
         <html>
         <body>
         <p>Some secrets:</p>
-        {{- with secret "secret/data/myapp/config" }}
+        {{- with secret "otus/data/otus-ro/config" }}
         <ul>
         <li><pre>username: {{ .Data.data.username }}</pre></li>
         <li><pre>password: {{ .Data.data.password }}</pre></li>
@@ -1279,6 +1279,27 @@ pod/vault-agent-example created
 * законнектится к поду nginx и вытащить оттуда index.html
 * index.html приложить к ДЗ
 
+```
+[user@rocky9 vault-agent-k8s-demo]$ kubectl cp vault-agent-example:/usr/share/nginx/html/index.html ./index.html
+Defaulted container "nginx-container" out of: nginx-container, vault-agent (init)
+tar: Removing leading `/' from member names
+[user@rocky9 vault-agent-k8s-demo]$ 
+```
+
+```
+[user@rocky9 vault-agent-k8s-demo]$ cat ./index.html 
+<html>
+<body>
+<p>Some secrets:</p>
+<ul>
+<li><pre>username: otus</pre></li>
+<li><pre>password: h7sgm4j9ztpt</pre></li>
+</ul>
+
+</body>
+</html>
+[user@rocky9 vault-agent-k8s-demo]$ 
+```
 
 ---
 ## создадим  CA на базе vault 
@@ -1286,7 +1307,7 @@ pod/vault-agent-example created
 * Включим pki секретс
 
 ```bash
- kubectl exec -it vault-0 -- vault secrets enable pki
+ kubectl exec -it vault-0 -- vault secrets enable --version=2 pki
  kubectl exec -it vault-0 -- vault secrets tune -max-lease-ttl=87600h pki
  kubectl exec -it vault-0 -- vault write -field=certificate pki/root/generate/internal  \
  common_name="exmaple.ru"  ttl=87600h > CA_cert.crt
@@ -1304,7 +1325,7 @@ pod/vault-agent-example created
 ## создадим промежуточный сертификат
  
 ```bash
-kubectl exec -it vault-0 -- vault secrets enable --path=pki_int pki
+kubectl exec -it vault-0 -- vault secrets enable --version=2 --path=pki_int pki
 kubectl exec -it vault-0 -- vault secrets tune -max-lease-ttl=87600h pki_int
 kubectl exec -it vault-0 -- vault write -format=json pki_int/intermediate/generate/internal  \
 common_name="example.ru Intermediate Authority"         | jq -r '.data.csr' > pki_intermediate.csr

@@ -18,12 +18,12 @@ spec:
 
   initContainers:
   - args:
-    - "agent"
-    - "-config=/etc/vault/vault-agent-config.hcl"
-    - "-log-level=debug"
+    - agent
+    - -config=/etc/vault/vault-agent-config.hcl
+    - -log-level=debug
     env:
     - name: VAULT_ADDR
-      value: http://10.112.128.1:8200
+      value: http://vault:8200
     image: hashicorp/vault:latest
     name: vault-agent
     volumeMounts:
@@ -33,17 +33,17 @@ spec:
       name: shared-data
 
   containers:
-    - image: nginx:latest
-      name: nginx-container
-      ports:
-        - containerPort: 80
-      volumeMounts:
-        - mountPath: /usr/share/nginx/html
-          name: shared-data
-      resources:
-        requests:
-          memory: 256Mi
-          cpu: "0.2"
-        limits:
-          memory: 512Mi
-          cpu: "0.4"
+  - image: nginx:latest
+    name: nginx-container
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - mountPath: /usr/share/nginx/html
+      name: shared-data
+#    resources:
+#      requests:
+#        memory: 256Mi
+#        cpu: "0.2"
+#      limits:
+#        memory: 512Mi
+#        cpu: "0.4"
