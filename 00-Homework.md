@@ -704,8 +704,8 @@ token/    token    auth_token_3cdd5f14    token based credentials    n/a
 ```bash
 kubectl exec -it vault-0 -- vault secrets enable --version=2 --path=otus kv
 kubectl exec -it vault-0 -- vault secrets list --detailed
-kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp'
-kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztp'
+kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztpt'
+kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztpt'
 kubectl exec -it vault-0 -- vault read otus/otus-ro/config
 kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
 ```
@@ -724,11 +724,11 @@ otus/         kv           kv_6c46427d           system         system     false
 sys/          system       system_eed4f82b       n/a            n/a        false             replicated     true         false                      map[]      system endpoints used for control, policy and debugging    3a50dec2-c0bc-a9f7-61ca-8eae814b9bd7    n/a        v1.15.2+builtin.vault    n/a               n/a
 [user@rocky9 lab-13]$ 
 [user@rocky9 lab-13]$ 
-[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp'
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztpt'
 Success! Data written to: otus/otus-ro/config
 [user@rocky9 lab-13]$ 
 [user@rocky9 lab-13]$ 
-[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztp'
+[user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztpt'
 Success! Data written to: otus/otus-rw/config
 [user@rocky9 lab-13]$ 
 [user@rocky9 lab-13]$ 
@@ -736,7 +736,7 @@ Success! Data written to: otus/otus-rw/config
 Key                 Value
 ---                 -----
 refresh_interval    768h
-password            h7sgm4j9ztp
+password            h7sgm4j9ztpt
 username            otus
 [user@rocky9 lab-13]$ 
 [user@rocky9 lab-13]$ 
@@ -744,7 +744,7 @@ username            otus
 ====== Data ======
 Key         Value
 ---         -----
-password    h7sgm4j9ztp
+password    h7sgm4j9ztpt
 username    otus
 [user@rocky9 lab-13]$ 
 ```
@@ -1093,10 +1093,10 @@ curl --header "X-Vault-Token:s.pPjvLHcbKsNoWo7zAAuhMoVK" $VAULT_ADDR/v1/otus/otu
 
 ```
 / # curl --header "X-Vault-Token:$TOKEN" $VAULT_ADDR/v1/otus/otus-ro/config
-{"request_id":"4216cba9-8d22-098b-1f61-9fcf8ad2cd3c","lease_id":"","renewable":false,"lease_duration":2764800,"data":{"password":"h7sgm4j9ztp","username":"otus"},"wrap_info":null,"warnings":null,"auth":null}
+{"request_id":"4216cba9-8d22-098b-1f61-9fcf8ad2cd3c","lease_id":"","renewable":false,"lease_duration":2764800,"data":{"password":"h7sgm4j9ztpt","username":"otus"},"wrap_info":null,"warnings":null,"auth":null}
 / # 
 / # curl --header "X-Vault-Token:$TOKEN" $VAULT_ADDR/v1/otus/otus-rw/config
-{"request_id":"52d8847f-3cfa-4b40-04bd-48f08fe275f5","lease_id":"","renewable":false,"lease_duration":2764800,"data":{"password":"h7sgm4j9ztp","username":"otus"},"wrap_info":null,"warnings":null,"auth":null}
+{"request_id":"52d8847f-3cfa-4b40-04bd-48f08fe275f5","lease_id":"","renewable":false,"lease_duration":2764800,"data":{"password":"h7sgm4j9ztpt","username":"otus"},"wrap_info":null,"warnings":null,"auth":null}
 / # 
 ```
 
