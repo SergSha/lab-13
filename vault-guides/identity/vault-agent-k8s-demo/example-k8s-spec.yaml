@@ -11,9 +11,12 @@ spec:
       items:
       - key: vault-agent-config.hcl
         path: vault-agent-config.hcl
+      - key: vault-agent-rendered.hcl
+        path: vault-agent-rendered.hcl
       name: example-vault-agent-config
     name: config
-  - emptyDir: {}
+  - emptyDir:
+      medium: Memory
     name: shared-data
 
   initContainers:
@@ -47,3 +50,17 @@ spec:
 #      limits:
 #        memory: 512Mi
 #        cpu: "0.4"
+  - image: hashicorp/vault:latest
+    name: vault-agent-remdered
+    args:
+    - agent
+    - -config=/etc/vault/vault-agent-rendered.hcl
+    - -log-level=debug
+    env:
+    - name: VAULT_ADDR
+      value: http://vault:8200
+    volumeMounts:
+    - mountPath: /etc/vault
+      name: config
+    - mountPath: /etc/secrets
+      name: shared-data
