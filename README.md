@@ -982,7 +982,7 @@ export K8S_HOST=$(kubectl cluster-info | grep 'Kubernetes control plane' | awk '
 
 #### Запишем конфиг в vault
 
-```
+```bash
 kubectl exec -it vault-0 -- vault write auth/kubernetes/config \
 token_reviewer_jwt="$SA_JWT_TOKEN" \
 kubernetes_host="$K8S_HOST" \
@@ -1038,7 +1038,7 @@ path "otus/data/otus-rw/*" {
 
 #### создадим политику и роль в vault 
 
-```
+```bash
 kubectl cp otus-policy.hcl vault-0:/tmp/
 
 kubectl exec -it vault-0 -- vault policy write otus-policy /tmp/otus-policy.hcl
@@ -1233,6 +1233,7 @@ Success! Data written to: auth/kubernetes/role/otus
 / # curl --request POST --data '{"bar": "baz"}'   --header "X-Vault-Token:$TOKEN" $VAULT_ADDR/v1/otus/otus-rw/config
 / # 
 ```
+Как видим, запись прошла без ошибок.
 
 ---
 
@@ -1347,10 +1348,12 @@ data:
 kind: ConfigMap
 metadata:
   name: example-vault-agent-config
-  namespace: default[user@rocky9 vault-agent-k8s-demo]$ 
+  namespace: default
+[user@rocky9 vault-agent-k8s-demo]$ 
 ```
 
-```[user@rocky9 vault-agent-k8s-demo]$ cat ./example-k8s-spec.yaml 
+```
+[user@rocky9 vault-agent-k8s-demo]$ cat ./example-k8s-spec.yaml 
 apiVersion: v1
 kind: Pod
 metadata:
@@ -1425,14 +1428,14 @@ spec:
 ####  Запускаем пример
 
 ```bash
-    # Create a ConfigMap, example-vault-agent-config
-    $ kubectl create -f configmap.yaml
+# Create a ConfigMap, example-vault-agent-config
+$ kubectl create -f configmap.yaml
 
-    # View the created ConfigMap
-    $ kubectl get configmap example-vault-agent-config -o yaml
+# View the created ConfigMap
+$ kubectl get configmap example-vault-agent-config -o yaml
 
-    # Finally, create vault-agent-example Pod
-    $ kubectl apply -f example-k8s-spec.yaml
+# Finally, create vault-agent-example Pod
+$ kubectl apply -f example-k8s-spec.yaml
 ```
 
 ```
@@ -1938,12 +1941,13 @@ revocation_time_rfc3339    2024-01-21T15:44:31.904503534Z
 state                      revoked
 [user@rocky9 lab-13]$ 
 ```
-
 ---
 #### включить TLS (было продемонстрировано в лекции)
 * реализовать доступ к vault через https с CA из кубернетес
 * в README.md описать последовательность действий
 * предоставить примеры работы курлом
+
+https://developer.hashicorp.com/vault/tutorials/kubernetes/kubernetes-minikube-tls
 
 ---
 #### Настроить автообновление сертификатов 
@@ -1965,111 +1969,11 @@ state                      revoked
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 helm install consul ./consul-helm/
 helm install vault ./vault-helm/
 
 kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3
----
-Unseal Key 1: SxGjcXeqDXFMXC3bYUvuymBbtjs5tq9C0xw9bDvNpfJ/
-Unseal Key 2: j0w47uZIYODhdm3UZjnIF8XCo+C6t7mEEf8ZE/pnTYB4
-Unseal Key 3: eQy6Phhn4LEXq2KEQC5aUmGxz+gPX+6We5mOojmj6lqD
-Unseal Key 4: Vnx3s9/hU4xT41OodFb0/3vTqEDiNwVBQmWjLX39Svq+
-Unseal Key 5: BUD1uKP3LJKFRvswlkqLEOU0BsQRrNsRV3Rls01sfiwS
 
-Initial Root Token: hvs.61gFjOcaoapfyBmHXCFrj4vm
----
-
-kubectl exec -it vault-0 -- vault operator unseal 'SxGjcXeqDXFMXC3bYUvuymBbtjs5tq9C0xw9bDvNpfJ/'
-kubectl exec -it vault-1 -- vault operator unseal 'SxGjcXeqDXFMXC3bYUvuymBbtjs5tq9C0xw9bDvNpfJ/'
-kubectl exec -it vault-2 -- vault operator unseal 'SxGjcXeqDXFMXC3bYUvuymBbtjs5tq9C0xw9bDvNpfJ/'
-kubectl exec -it vault-0 -- vault operator unseal 'j0w47uZIYODhdm3UZjnIF8XCo+C6t7mEEf8ZE/pnTYB4'
-kubectl exec -it vault-1 -- vault operator unseal 'j0w47uZIYODhdm3UZjnIF8XCo+C6t7mEEf8ZE/pnTYB4'
-kubectl exec -it vault-2 -- vault operator unseal 'j0w47uZIYODhdm3UZjnIF8XCo+C6t7mEEf8ZE/pnTYB4'
-kubectl exec -it vault-0 -- vault operator unseal 'eQy6Phhn4LEXq2KEQC5aUmGxz+gPX+6We5mOojmj6lqD'
-kubectl exec -it vault-1 -- vault operator unseal 'eQy6Phhn4LEXq2KEQC5aUmGxz+gPX+6We5mOojmj6lqD'
-kubectl exec -it vault-2 -- vault operator unseal 'eQy6Phhn4LEXq2KEQC5aUmGxz+gPX+6We5mOojmj6lqD'
-
-kubectl exec -it vault-0 -- vault login
-kubectl exec -it vault-0 -- vault auth list
-
-kubectl exec -it vault-0 -- vault secrets enable --version=2 --path=otus kv
-kubectl exec -it vault-0 -- vault secrets list --detailed
-kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp'
-kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztp'
-kubectl exec -it vault-0 -- vault read otus/otus-ro/config
-kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
-
-kubectl exec -it vault-0 -- vault auth enable kubernetes
-kubectl exec -it vault-0 -- vault auth list
-
-kubectl create serviceaccount vault-auth
-kubectl apply -f ./vault-auth-service-account.yml
-
-export VAULT_SA_NAME=$(kubectl get sa vault-auth -o jsonpath="{.secrets[*]['name']}")
-export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
-export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
-export K8S_HOST=$(more ~/.kube/config | grep server |awk '/http/ {print $NF}')
-export K8S_HOST=$(kubectl cluster-info | grep 'Kubernetes control plane' | awk '/https/ {print $NF}' | sed 's/\x1b\[[0-9;]*m//g' )
-
-kubectl exec -it vault-0 -- vault write auth/kubernetes/config token_reviewer_jwt="$SA_JWT_TOKEN" kubernetes_host="$K8S_HOST" kubernetes_ca_cert="$SA_CA_CRT"
-kubectl cp otus-policy.hcl vault-0:/tmp/
-kubectl exec -it vault-0 -- vault policy write otus-policy /tmp/otus-policy.hcl
-kubectl exec -it vault-0 -- vault write auth/kubernetes/role/otus bound_service_account_names=vault-auth bound_service_account_namespaces=default policies=otus-policy  ttl=24h
-
-cd ./vault-guides/identity/vault-agent-k8s-demo
-kubectl create -f ./configmap.yaml
-kubectl get configmap example-vault-agent-config -o yaml
-kubectl apply -f example-k8s-spec.yaml --record
-
-kubectl get pods
-
-kubectl describe pods vault-agent-example
-
-kubectl logs vault-agent-example
-
-kubectl get cm
-
-kubectl describe cm example-vault-agent-config
-
-cd ~/otus/lab-13/
-terraform destroy -auto-approve
-
-git status
-git add .
-git commit -m 'edit 00-Homework.md, configmap.yaml'
-git push -u origin main
-git status
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-helm install consul ./consul-helm/
-helm install vault ./vault-helm/
-
-kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3
----
 Unseal Key 1: hSUclB2HR1F471aGDEQ6ApXYBmr6Llcq4bXLDvvUj+Zv
 Unseal Key 2: o7LBS/v3shu1nelrSTLTNDXLun8BOSHY61FHyGZBb7aN
 Unseal Key 3: fWNj4Mrd8jO6oQsySfrCEE2j2sU9apPk1xpRuXD/akTI
@@ -2077,7 +1981,7 @@ Unseal Key 4: kgxXh91NxWL1gtagwOTGrdP/hJvkYLzSZJ60YqNc5Frm
 Unseal Key 5: odkypq22mJRawJhrET6HD42sJJ0CsTxnQ6KY2TSm0St1
 
 Initial Root Token: hvs.k9pmLkPsDRgqD4nd8MTFpNtk
----
+
 
 kubectl exec -it vault-0 -- vault operator unseal 'hSUclB2HR1F471aGDEQ6ApXYBmr6Llcq4bXLDvvUj+Zv'
 kubectl exec -it vault-1 -- vault operator unseal 'hSUclB2HR1F471aGDEQ6ApXYBmr6Llcq4bXLDvvUj+Zv'
@@ -2154,8 +2058,3 @@ kubectl describe cm example-vault-agent-config
 cd ~/otus/lab-13/
 terraform destroy -auto-approve
 
-git status
-git add .
-git commit -m 'edit 00-Homework.md, configmap.yaml'
-git push -u origin main
-git status
