@@ -29,25 +29,25 @@ https://cloud.yandex.ru/docs/iam/concepts/authorization/oauth-token
 ```
 
 Настраиваем аутентификации в консоли:
-```
+```bash
 export YC_TOKEN=$(yc iam create-token)
 export TF_VAR_yc_token=$YC_TOKEN
 ```
 
 Скачиваем проект с гитхаба:
-```
+```bash
 git clone https://github.com/SergSha/lab-13.git && cd ./lab-13
 ```
 
 В файле input.auto.tfvars нужно вставить свой 'cloud_id':
-```
+```bash
 cloud_id  = "..."
 ```
 
 Kubernetes кластер будем разворачивать с помощью Terraform, а все установки и настройки необходимых приложений будем реализовывать с помощью команд kubectl и helm.
 
 Установка kubectl с помощью встроенного пакетного менеджера:
-```
+```bash
 # This overwrites any existing configuration in /etc/yum.repos.d/kubernetes.repo
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
@@ -61,7 +61,7 @@ sudo dnf install -y kubectl
 ```
 
 Установка helm:
-```
+```bash
 curl -LO https://get.helm.sh/helm-v3.13.3-linux-amd64.tar.gz
 tar -xf ./helm-v3.13.3-linux-amd64.tar.gz
 sudo mv ./linux-amd64/helm /usr/local/bin/
@@ -69,7 +69,7 @@ rm -rf ./helm-v3.13.3-linux-amd64.tar.gz ./linux-amd64/
 ```
 
 Для того чтобы развернуть kubernetes кластер, нужно выполнить следующую команду:
-```
+```bash
 terraform init && terraform apply -auto-approve
 ```
 
@@ -145,7 +145,7 @@ To learn more about the release, run:
  
  * склонируем репозиторий vault
  
- ```
+ ```bash
  git clone https://github.com/hashicorp/vault-helm.git
  ```
 ---
@@ -258,7 +258,9 @@ Administrative Namespace:
 #### Инициализируем vault
 
 * проведите инициализацию через любой под vault'а
-```kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3```
+```bash
+kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3
+```
 
 ```
 [user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3
@@ -302,7 +304,9 @@ Initial Root Token: hvs.S39d9xe1EEXLTAnvFgz0fuC1
 #### Проверим состояние vault'а
 
 
-```kubectl logs vault-0```
+```bash
+kubectl logs vault-0
+```
 
 ```
 [user@rocky9 lab-13]$ kubectl logs vault-0
@@ -697,7 +701,9 @@ Active Node Address    http://10.112.128.8:8200
 ####  Посмотрим список доступных авторизаций
  
 * выполните
-```kubectl exec -it vault-0 -- vault auth list```
+```bash
+kubectl exec -it vault-0 -- vault auth list
+```
 
 * получите ошибку
 
@@ -925,7 +931,6 @@ type: kubernetes.io/service-account-token
 
 ```bash
 kubectl apply -f ./vault-auth-secret.yaml
-
 ```
 
 ```
@@ -1681,11 +1686,13 @@ common_name="example.ru Intermediate Authority"         | jq -r '.data.csr' > pk
 Success! Enabled the pki secrets engine at: pki_int/
 [user@rocky9 lab-13]$ 
 ```
+
 ```
 [user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault secrets tune -max-lease-ttl=87600h pki_int
 Success! Tuned the secrets engine at: pki_int/
 [user@rocky9 lab-13]$ 
 ```
+
 ```
 [user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault write -format=json pki_int/intermediate/generate/internal  \
 common_name="example.ru Intermediate Authority"         | jq -r '.data.csr' > pki_intermediate.csr
@@ -1801,7 +1808,7 @@ use_pss                               false
 [user@rocky9 lab-13]$ 
 ```
 
-*  Создадим и отзовем сертификат
+*  Создадим и отзовем сертификат:
 ```bash
 kubectl exec -it vault-0 -- vault write pki_int/issue/example-dot-ru common_name="www.example.ru" ttl="24h"
 kubectl exec -it vault-0 -- vault write pki_int/revoke serial_number="04:70:d4:7e:c5:d3:ec:ec:a0:5d:cf:20:6f:e8:f8:81:f2:8e:99:6b"
@@ -1809,7 +1816,6 @@ kubectl exec -it vault-0 -- vault write pki_int/revoke serial_number="04:70:d4:7
 * выдачу при создании сертификата добавить в README.md
 
 Создадим сертификат:
-
 ```
 [user@rocky9 lab-13]$ kubectl exec -it vault-0 -- vault write pki_int/issue/example-dot-ru common_name="www.example.ru" ttl="24h"
 Key                 Value
