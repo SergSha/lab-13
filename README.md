@@ -2035,7 +2035,7 @@ e is 65537 (0x010001)
 [user@redos lab-13]$ 
 ```
 
-#### Создание запроса на подписание сертификата (CSR).
+#### Создание запроса на подписание сертификата (CSR)
 
 1. Создадим файл конфигурации CSR:
 ```bash
@@ -2099,7 +2099,7 @@ openssl req -new -key ${WORKDIR}/vault.key -out ${WORKDIR}/vault.csr -config ${W
 [user@redos lab-13]$ 
 ```
 
-#### Создание сертификата.
+#### Создание сертификата
 
 1. Создадим csr yaml файл для отправки в Kubernetes:
 ```bash
@@ -2458,7 +2458,7 @@ Raft Applied Index      53
 Команда operator unseal сообщает, что хранилище инициализировано и распечатано.
 
 
-#### Присоединение к кластеру Raft vault-1 и vault2 pods
+#### Присоединение к кластеру Raft подов vault-1 и vault2
 
 1. Запустим сеанс интерактивной командной строки в поде vault-1:
 ```bash
@@ -2787,8 +2787,8 @@ curl --cacert $WORKDIR/vault.ca \
                                  Dload  Upload   Total   Spent    Left  Speed
 100   356  100   356    0     0   3128      0 --:--:-- --:--:-- --:--:--  3150
 {
-  "password": "supersecret@Otus1234",
-  "username": "apiuser"
+  "password": "supersecret@Otus1234",               # <--- получено значение 'password'
+  "username": "apiuser"                             # <--- получено значение 'username'
 }
 [user@redos lab-13]$ 
 ```
