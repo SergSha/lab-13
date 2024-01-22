@@ -1947,114 +1947,858 @@ state                      revoked
 * в README.md описать последовательность действий
 * предоставить примеры работы курлом
 
-https://developer.hashicorp.com/vault/tutorials/kubernetes/kubernetes-minikube-tls
 
----
-#### Настроить автообновление сертификатов 
-* запустить nginx
-* реализовать автообновление сертификатов для nginx c помощью consul-template или vault-inject
-* в ридми приложить скриншоты сертификатов из браузера (2 штуки, для демоснтрации рефреша)
-* конфиги для развертывания приложить в репозиторий
+Установка Vault Helm chart
 
----
-#### 🐍 Задание со 🌟 
-* Настроить autounseal 
-* провайдер для autounseal на ваш выбор, как вариант второй волт
-* описать все в README.md
+Vault управляет секретами, которые записываются на эти подключаемые тома. Для предоставления этих секретов требуется отдельный сервер Vault. Для этой демонстрации Vault можно запустить в режиме разработки, чтобы автоматически выполнить инициализацию, распечатку и настройку движка KV secrets engine.
+
+1. Добавим репозиторий HashiCorp Helm:
+```bash
+helm repo add hashicorp https://helm.releases.hashicorp.com
+```
+
+```
+[user@redos lab-13]$ helm repo add hashicorp https://helm.releases.hashicorp.com
+"hashicorp" has been added to your repositories
+[user@redos lab-13]$ 
+```
+
+2. Обновим все репозитории, чтобы убедиться, что helm определяет последние версии:
+```bash
+helm repo update
+```
+
+```
+[user@redos lab-13]$ helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "hashicorp" chart repository
+Update Complete. ⎈Happy Helming!⎈
+[user@redos lab-13]$ 
+```
+
+3. Для проверки выполним поиск репо vault:
+```bash
+helm search repo hashicorp/vault
+```
+
+```
+[user@redos lab-13]$ helm search repo hashicorp/vault
+NAME                            	CHART VERSION	APP VERSION	DESCRIPTION                          
+hashicorp/vault                 	0.27.0       	1.15.2     	Official HashiCorp Vault Chart       
+hashicorp/vault-secrets-operator	0.4.3        	0.4.3      	Official Vault Secrets Operator Chart
+[user@redos lab-13]$ 
+```
+
+#### Создание сертификата
+
+1. Создадим временно рабочий директорий:
+```bash
+mkdir /tmp/vault
+```
+
+```
+[user@redos lab-13]$ mkdir /tmp/vault
+[user@redos lab-13]$ 
+```
+
+2. Экспортируем расположение рабочего каталога и переменные:
+
+```bash
+export VAULT_K8S_NAMESPACE="vault" \
+export VAULT_HELM_RELEASE_NAME="vault" \
+export VAULT_SERVICE_NAME="vault-internal" \
+export K8S_CLUSTER_NAME="cluster.local" \
+export WORKDIR=/tmp/vault
+```
+
+```
+[user@redos lab-13]$ export VAULT_K8S_NAMESPACE="vault" \
+export VAULT_HELM_RELEASE_NAME="vault" \
+export VAULT_SERVICE_NAME="vault-internal" \
+export K8S_CLUSTER_NAME="cluster.local" \
+export WORKDIR=/tmp/vault
+[user@redos lab-13]$ 
+```
+
+3. Сгенерируем закрытый ключ:
+
+```bash
+openssl genrsa -out ${WORKDIR}/vault.key 2048
+```
+
+```
+[user@redos lab-13]$ openssl genrsa -out ${WORKDIR}/vault.key 2048
+Generating RSA private key, 2048 bit long modulus (2 primes)
+....................................................+++++
+.+++++
+e is 65537 (0x010001)
+[user@redos lab-13]$ 
+```
+
+#### Создание запроса на подписание сертификата (CSR).
+
+1. Создадим файл конфигурации CSR:
+```bash
+cat > ${WORKDIR}/vault-csr.conf <<EOF
+[req]
+default_bits = 2048
+prompt = no
+encrypt_key = yes
+default_md = sha256
+distinguished_name = kubelet_serving
+req_extensions = v3_req
+[ kubelet_serving ]
+O = system:nodes
+CN = system:node:*.${VAULT_K8S_NAMESPACE}.svc.${K8S_CLUSTER_NAME}
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = *.${VAULT_SERVICE_NAME}
+DNS.2 = *.${VAULT_SERVICE_NAME}.${VAULT_K8S_NAMESPACE}.svc.${K8S_CLUSTER_NAME}
+DNS.3 = *.${VAULT_K8S_NAMESPACE}
+IP.1 = 127.0.0.1
+EOF
+```
+
+```
+[user@redos lab-13]$ cat > ${WORKDIR}/vault-csr.conf <<EOF
+[req]
+default_bits = 2048
+prompt = no
+encrypt_key = yes
+default_md = sha256
+distinguished_name = kubelet_serving
+req_extensions = v3_req
+[ kubelet_serving ]
+O = system:nodes
+CN = system:node:*.${VAULT_K8S_NAMESPACE}.svc.${K8S_CLUSTER_NAME}
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = *.${VAULT_SERVICE_NAME}
+DNS.2 = *.${VAULT_SERVICE_NAME}.${VAULT_K8S_NAMESPACE}.svc.${K8S_CLUSTER_NAME}
+DNS.3 = *.${VAULT_K8S_NAMESPACE}
+IP.1 = 127.0.0.1
+EOF
+[user@redos lab-13]$ 
+```
+
+2. Создадим CSR:
+```bash
+openssl req -new -key ${WORKDIR}/vault.key -out ${WORKDIR}/vault.csr -config ${WORKDIR}/vault-csr.conf
+```
+
+```
+[user@redos lab-13]$ openssl req -new -key ${WORKDIR}/vault.key -out ${WORKDIR}/vault.csr -config ${WORKDIR}/vault-csr.conf
+[user@redos lab-13]$ 
+```
+
+#### Создание сертификата.
+
+1. Создадим csr yaml файл для отправки в Kubernetes:
+```bash
+cat > ${WORKDIR}/csr.yaml <<EOF
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+   name: vault.svc
+spec:
+   signerName: kubernetes.io/kubelet-serving
+   expirationSeconds: 8640000
+   request: $(cat ${WORKDIR}/vault.csr|base64|tr -d '\n')
+   usages:
+   - digital signature
+   - key encipherment
+   - server auth
+EOF
+```
+
+```
+[user@redos lab-13]$ cat > ${WORKDIR}/csr.yaml <<EOF
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+   name: vault.svc
+spec:
+   signerName: kubernetes.io/kubelet-serving
+   expirationSeconds: 8640000
+   request: $(cat ${WORKDIR}/vault.csr|base64|tr -d '\n')
+   usages:
+   - digital signature
+   - key encipherment
+   - server auth
+EOF
+[user@redos lab-13]$ 
+```
+
+2. Отправим CSR в Kubernetes:
+```bash
+kubectl create -f ${WORKDIR}/csr.yaml
+```
+
+```
+[user@redos lab-13]$ kubectl create -f ${WORKDIR}/csr.yaml
+certificatesigningrequest.certificates.k8s.io/vault.svc created
+[user@redos lab-13]$ 
+```
+
+3. Утвердим CSR в Kubernetes:
+```bash
+kubectl certificate approve vault.svc
+```
+
+```
+[user@redos lab-13]$ kubectl certificate approve vault.svc
+certificatesigningrequest.certificates.k8s.io/vault.svc approved
+[user@redos lab-13]$ 
+```
+
+4. Подтвердим выдачу сертификата:
+```bash
+kubectl get csr vault.svc
+```
+
+```
+[user@redos lab-13]$ kubectl get csr vault.svc
+NAME        AGE    SIGNERNAME                      REQUESTOR              REQUESTEDDURATION   CONDITION
+vault.svc   4m9s   kubernetes.io/kubelet-serving   ajecd4tsnko7s5au92sj   100d                Approved,Issued
+[user@redos lab-13]$ 
+```
+
+#### Хранение сертификатов и ключей в хранилище секретов Kubernetes
+
+1. Получим сертификат:
+```bash
+kubectl get csr vault.svc -o jsonpath='{.status.certificate}' | openssl base64 -d -A -out ${WORKDIR}/vault.crt
+```
+
+```
+[user@redos lab-13]$ kubectl get csr vault.svc -o jsonpath='{.status.certificate}' | openssl base64 -d -A -out ${WORKDIR}/vault.crt
+[user@redos lab-13]$ 
+```
+
+2. Получим сертификат центра сертификации Kubernetes:
+```bash
+ kubectl config view \
+--raw \
+--minify \
+--flatten \
+-o jsonpath='{.clusters[].cluster.certificate-authority-data}' \
+| base64 -d > ${WORKDIR}/vault.ca
+```
+
+```
+[user@redos lab-13]$ kubectl config view \
+--raw \
+--minify \
+--flatten \
+-o jsonpath='{.clusters[].cluster.certificate-authority-data}' \
+| base64 -d > ${WORKDIR}/vault.ca
+[user@redos lab-13]$ 
+```
+
+3. Создадим пространство имен Kubernetes 'vault':
+```bash
+kubectl create namespace $VAULT_K8S_NAMESPACE
+```
+
+```
+[user@redos lab-13]$ kubectl create namespace $VAULT_K8S_NAMESPACE
+namespace/vault created
+[user@redos lab-13]$ 
+```
+
+4. Создадим TLS секрет:
+```bash
+kubectl create secret generic vault-ha-tls \
+   -n $VAULT_K8S_NAMESPACE \
+   --from-file=vault.key=${WORKDIR}/vault.key \
+   --from-file=vault.crt=${WORKDIR}/vault.crt \
+   --from-file=vault.ca=${WORKDIR}/vault.ca
+```
+
+```
+[user@redos lab-13]$ kubectl create secret generic vault-ha-tls \
+   -n $VAULT_K8S_NAMESPACE \
+   --from-file=vault.key=${WORKDIR}/vault.key \
+   --from-file=vault.crt=${WORKDIR}/vault.crt \
+   --from-file=vault.ca=${WORKDIR}/vault.ca
+secret/vault-ha-tls created
+[user@redos lab-13]$ 
+```
+
+#### Развертывание кластера vault через helm с переопределениями
+
+1. Создадим файл overrides.yaml:
+```bash
+cat > ${WORKDIR}/overrides.yaml <<EOF
+global:
+   enabled: true
+   tlsDisable: false
+injector:
+   enabled: true
+server:
+   extraEnvironmentVars:
+      VAULT_CACERT: /vault/userconfig/vault-ha-tls/vault.ca
+      VAULT_TLSCERT: /vault/userconfig/vault-ha-tls/vault.crt
+      VAULT_TLSKEY: /vault/userconfig/vault-ha-tls/vault.key
+   volumes:
+      - name: userconfig-vault-ha-tls
+        secret:
+         defaultMode: 420
+         secretName: vault-ha-tls
+   volumeMounts:
+      - mountPath: /vault/userconfig/vault-ha-tls
+        name: userconfig-vault-ha-tls
+        readOnly: true
+   standalone:
+      enabled: false
+   affinity: ""
+   ha:
+      enabled: true
+      replicas: 3
+      raft:
+         enabled: true
+         setNodeId: true
+         config: |
+            ui = true
+            listener "tcp" {
+               tls_disable = 0
+               address = "[::]:8200"
+               cluster_address = "[::]:8201"
+               tls_cert_file = "/vault/userconfig/vault-ha-tls/vault.crt"
+               tls_key_file  = "/vault/userconfig/vault-ha-tls/vault.key"
+               tls_client_ca_file = "/vault/userconfig/vault-ha-tls/vault.ca"
+            }
+            storage "raft" {
+               path = "/vault/data"
+            }
+            disable_mlock = true
+            service_registration "kubernetes" {}
+EOF
+```
+
+```
+[user@redos lab-13]$ cat > ${WORKDIR}/overrides.yaml <<EOF
+global:
+   enabled: true
+   tlsDisable: false
+injector:
+   enabled: true
+server:
+   extraEnvironmentVars:
+      VAULT_CACERT: /vault/userconfig/vault-ha-tls/vault.ca
+      VAULT_TLSCERT: /vault/userconfig/vault-ha-tls/vault.crt
+      VAULT_TLSKEY: /vault/userconfig/vault-ha-tls/vault.key
+   volumes:
+      - name: userconfig-vault-ha-tls
+        secret:
+         defaultMode: 420
+         secretName: vault-ha-tls
+   volumeMounts:
+      - mountPath: /vault/userconfig/vault-ha-tls
+        name: userconfig-vault-ha-tls
+        readOnly: true
+   standalone:
+      enabled: false
+   affinity: ""
+   ha:
+      enabled: true
+      replicas: 3
+      raft:
+         enabled: true
+         setNodeId: true
+         config: |
+            ui = true
+            listener "tcp" {
+               tls_disable = 0
+               address = "[::]:8200"
+               cluster_address = "[::]:8201"
+               tls_cert_file = "/vault/userconfig/vault-ha-tls/vault.crt"
+               tls_key_file  = "/vault/userconfig/vault-ha-tls/vault.key"
+               tls_client_ca_file = "/vault/userconfig/vault-ha-tls/vault.ca"
+            }
+            storage "raft" {
+               path = "/vault/data"
+            }
+            disable_mlock = true
+            service_registration "kubernetes" {}
+EOF
+[user@redos lab-13]$ 
+```
+
+2. Разворачиваем кластер 'vault' в пространстве имён 'vault':
+```bash
+helm install -n $VAULT_K8S_NAMESPACE $VAULT_HELM_RELEASE_NAME hashicorp/vault -f ${WORKDIR}/overrides.yaml
+```
+
+```
+[user@redos lab-13]$ helm install -n $VAULT_K8S_NAMESPACE $VAULT_HELM_RELEASE_NAME hashicorp/vault -f ${WORKDIR}/overrides.yaml
+NAME: vault
+LAST DEPLOYED: Mon Jan 22 10:10:43 2024
+NAMESPACE: vault
+STATUS: deployed
+REVISION: 1
+NOTES:
+Thank you for installing HashiCorp Vault!
+
+Now that you have deployed Vault, you should look over the docs on using
+Vault with Kubernetes available here:
+
+https://developer.hashicorp.com/vault/docs
 
 
+Your release is named vault. To learn more about the release, try:
+
+  $ helm status vault
+  $ helm get manifest vault
+[user@redos lab-13]$ 
+```
+
+3. Отобразим поды в пространстве имен, созданном для 'vault':
+```bash
+kubectl -n $VAULT_K8S_NAMESPACE get pods
+```
+
+```
+[user@redos lab-13]$ kubectl -n $VAULT_K8S_NAMESPACE get pods
+NAME                                    READY   STATUS    RESTARTS   AGE
+vault-0                                 0/1     Running   0          113s
+vault-1                                 0/1     Running   0          113s
+vault-2                                 0/1     Running   0          113s
+vault-agent-injector-78b768864b-fq5rw   1/1     Running   0          113s
+[user@redos lab-13]$ 
+```
+
+4. Инициализируем vault-0 с помощью одного общего ключа и одного порогового значения ключа (в демонстрационных целях):
+```bash
+kubectl exec -n $VAULT_K8S_NAMESPACE vault-0 -- vault operator init \
+    -key-shares=1 \
+    -key-threshold=1 \
+    -format=json > ${WORKDIR}/cluster-keys.json
+```
+
+```
+[user@redos lab-13]$ kubectl exec -n $VAULT_K8S_NAMESPACE vault-0 -- vault operator init \
+    -key-shares=1 \
+    -key-threshold=1 \
+    -format=json > ${WORKDIR}/cluster-keys.json
+[user@redos lab-13]$ 
+```
+
+operator init: команда генерирует корневой ключ, который разбирается на общие ключи -key-shares=1, а затем устанавливает количество общих ключей, необходимых для разблокировки Vault -key-threshold=1. Эти общие ключи записываются в выходные данные в виде ключей распечатки в формате JSON -format=json. Здесь выходные данные перенаправляются в файл с именем cluster-keys.json.
+
+5. Отобразим ключ разблокировки, найденный в cluster-keys.json:
+```bash
+jq -r ".unseal_keys_b64[]" ${WORKDIR}/cluster-keys.json
+```
+
+```
+[user@redos lab-13]$ jq -r ".unseal_keys_b64[]" ${WORKDIR}/cluster-keys.json
+PfyFSeyJU7NsfY+H5ACXjP1vxMrdjm5rSp4n4lw2bng=
+[user@redos lab-13]$ 
+```
+
+Внимание! Небезопасная операция!
+
+Не запускайте незапечатанное хранилище в рабочей среде с одним общим ключом и одним пороговым значением ключа. Этот подход используется здесь только для упрощения процесса вскрытия для этой демонстрации.
+
+6. Создадим переменную с именем VAULT_UNSEAL_KEY для записи ключа разблокировки хранилища:
+```bash
+VAULT_UNSEAL_KEY=$(jq -r ".unseal_keys_b64[]" ${WORKDIR}/cluster-keys.json)
+```
+
+```
+[user@redos lab-13]$ VAULT_UNSEAL_KEY=$(jq -r ".unseal_keys_b64[]" ${WORKDIR}/cluster-keys.json)
+[user@redos lab-13]$ 
+```
+
+После инициализации Vault настроен так, чтобы знать, где и как получить доступ к хранилищу, но не знает, как расшифровать что-либо из этого. Снятие печати - это процесс создания корневого ключа, необходимого для считывания ключа дешифрования для расшифровки данных, обеспечивающего доступ к Хранилищу.
+
+7. Распечатаем Vault, запущенный на vault-0 модуле:
+```bash
+kubectl exec -n $VAULT_K8S_NAMESPACE vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+```
+
+```
+[user@redos lab-13]$ kubectl exec -n $VAULT_K8S_NAMESPACE vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+Key                     Value
+---                     -----
+Seal Type               shamir
+Initialized             true
+Sealed                  false
+Total Shares            1
+Threshold               1
+Version                 1.15.2
+Build Date              2023-11-06T11:33:28Z
+Storage Type            raft
+Cluster Name            vault-cluster-6930a56a
+Cluster ID              3ae6672d-a2b0-8eec-9e10-e0f12aefd1e1
+HA Enabled              true
+HA Cluster              https://vault-0.vault-internal:8201
+HA Mode                 active
+Active Since            2024-01-22T07:28:21.853806523Z
+Raft Committed Index    53
+Raft Applied Index      53
+[user@redos lab-13]$ 
+```
+
+Сервер Vault инициализирован и распечатан.
+
+Внимание! Небезопасная операция!
+
+Предоставление ключа распечатки с помощью команды записывает ключ в историю вашей оболочки. Этот подход используется здесь только для упрощения процесса распечатки для этой демонстрации.
+
+Команда operator unseal сообщает, что хранилище инициализировано и распечатано.
 
 
+#### Присоединение к кластеру Raft vault-1 и vault2 pods
+
+1. Запустим сеанс интерактивной командной строки в поде vault-1:
+```bash
+kubectl exec -n $VAULT_K8S_NAMESPACE -it vault-1 -- /bin/sh
+```
+
+```
+[user@redos lab-13]$ kubectl exec -n $VAULT_K8S_NAMESPACE -it vault-1 -- /bin/sh
+/ $ 
+```
+
+Наше системное приглашение заменено новым / $.
+
+2. Присоединим под vault-1 к кластеру Raft:
+```bash
+vault operator raft join -address=https://vault-1.vault-internal:8200 -leader-ca-cert="$(cat /vault/userconfig/vault-ha-tls/vault.ca)" -leader-client-cert="$(cat /vault/userconfig/vault-ha-tls/vault.crt)" -leader-client-key="$(cat /vault/userconfig/vault-ha-tls/vault.key)" https://vault-0.vault-internal:8200
+```
+
+```
+/ $ vault operator raft join -address=https://vault-1.vault-internal:8200 -leade
+r-ca-cert="$(cat /vault/userconfig/vault-ha-tls/vault.ca)" -leader-client-cert="
+$(cat /vault/userconfig/vault-ha-tls/vault.crt)" -leader-client-key="$(cat /vaul
+t/userconfig/vault-ha-tls/vault.key)" https://vault-0.vault-internal:8200
+Key       Value
+---       -----
+Joined    true
+/ $ 
+```
+
+3. Выходим из пода vault-1:
+```bash
+exit
+```
+
+```
+/ $ exit
+[user@redos lab-13]$ 
+```
+
+4. Распечатаем vault-1:
+```bash
+kubectl exec -n $VAULT_K8S_NAMESPACE -ti vault-1 -- vault operator unseal $VAULT_UNSEAL_KEY
+```
+
+```
+[user@redos lab-13]$ kubectl exec -n $VAULT_K8S_NAMESPACE -ti vault-1 -- vault operator unseal $VAULT_UNSEAL_KEY
+Key                Value
+---                -----
+Seal Type          shamir
+Initialized        true
+Sealed             true
+Total Shares       1
+Threshold          1
+Unseal Progress    0/1
+Unseal Nonce       n/a
+Version            1.15.2
+Build Date         2023-11-06T11:33:28Z
+Storage Type       raft
+HA Enabled         true
+[user@redos lab-13]$ 
+```
+
+5. Запустим сеанс интерактивной командной строки в поде vault-2:
+```bash
+kubectl exec -n $VAULT_K8S_NAMESPACE -it vault-2 -- /bin/sh
+```
+
+```
+[user@redos lab-13]$ kubectl exec -n $VAULT_K8S_NAMESPACE -it vault-2 -- /bin/sh
+/ $ 
+```
+
+Наше системное приглашение заменено новым / $.
+
+6. Присоединим под vault-2 к кластеру Raft:
+```bash
+vault operator raft join -address=https://vault-2.vault-internal:8200 -leader-ca-cert="$(cat /vault/userconfig/vault-ha-tls/vault.ca)" -leader-client-cert="$(cat /vault/userconfig/vault-ha-tls/vault.crt)" -leader-client-key="$(cat /vault/userconfig/vault-ha-tls/vault.key)" https://vault-0.vault-internal:8200
+```
+
+```
+/ $ vault operator raft join -address=https://vault-2.vault-internal:8200 -leade
+r-ca-cert="$(cat /vault/userconfig/vault-ha-tls/vault.ca)" -leader-client-cert="
+$(cat /vault/userconfig/vault-ha-tls/vault.crt)" -leader-client-key="$(cat /vaul
+t/userconfig/vault-ha-tls/vault.key)" https://vault-0.vault-internal:8200
+Key       Value
+---       -----
+Joined    true
+/ $ 
+```
+
+7. Выходим из пода vault-2:
+```bash
+exit
+```
+
+```
+/ $ exit
+[user@redos lab-13]$ 
+```
+
+8. Распечатаем vault-2.
+```bash
+kubectl exec -n $VAULT_K8S_NAMESPACE -ti vault-2 -- vault operator unseal $VAULT_UNSEAL_KEY
+```
+
+```
+[user@redos lab-13]$ kubectl exec -n $VAULT_K8S_NAMESPACE -ti vault-2 -- vault operator unseal $VAULT_UNSEAL_KEY
+Key                Value
+---                -----
+Seal Type          shamir
+Initialized        true
+Sealed             true
+Total Shares       1
+Threshold          1
+Unseal Progress    0/1
+Unseal Nonce       n/a
+Version            1.15.2
+Build Date         2023-11-06T11:33:28Z
+Storage Type       raft
+HA Enabled         true
+[user@redos lab-13]$ 
+```
+
+Войдём в vault и убедимся, что все работает
+
+9. Экспортируем корневой токен кластера:
+```bash
+export CLUSTER_ROOT_TOKEN=$(cat ${WORKDIR}/cluster-keys.json | jq -r ".root_token")
+```
+
+```
+[user@redos lab-13]$ export CLUSTER_ROOT_TOKEN=$(cat ${WORKDIR}/cluster-keys.json | jq -r ".root_token")
+[user@redos lab-13]$ 
+```
+
+10. Войдём в vault-0 с помощью токена root:
+```bash
+kubectl exec -n $VAULT_K8S_NAMESPACE vault-0 -- vault login $CLUSTER_ROOT_TOKEN
+```
+
+```
+[user@redos lab-13]$ kubectl exec -n $VAULT_K8S_NAMESPACE vault-0 -- vault login $CLUSTER_ROOT_TOKEN
+Success! You are now authenticated. The token information displayed below
+is already stored in the token helper. You do NOT need to run "vault login"
+again. Future Vault requests will automatically use this token.
+
+Key                  Value
+---                  -----
+token                hvs.pbys2aybWstpmDwnrf7rqABP
+token_accessor       vQnuExeqIUnzRrqxaD3E1j50
+token_duration       ∞
+token_renewable      false
+token_policies       ["root"]
+identity_policies    []
+policies             ["root"]
+[user@redos lab-13]$ 
+```
+
+11. Список узлов raft:
+```bash
+kubectl exec -n $VAULT_K8S_NAMESPACE vault-0 -- vault operator raft list-peers
+```
+
+```
+[user@redos lab-13]$ kubectl exec -n $VAULT_K8S_NAMESPACE vault-0 -- vault operator raft list-peers
+Node       Address                        State       Voter
+----       -------                        -----       -----
+vault-0    vault-0.vault-internal:8201    leader      true
+vault-1    vault-1.vault-internal:8201    follower    true
+vault-2    vault-2.vault-internal:8201    follower    true
+[user@redos lab-13]$ 
+```
+
+12. Распечатаем статус HA:
+```bash
+kubectl exec -n $VAULT_K8S_NAMESPACE vault-0 -- vault status
+```
+
+```
+[user@redos lab-13]$ kubectl exec -n $VAULT_K8S_NAMESPACE vault-0 -- vault status
+Key                     Value
+---                     -----
+Seal Type               shamir
+Initialized             true
+Sealed                  false
+Total Shares            1
+Threshold               1
+Version                 1.15.2
+Build Date              2023-11-06T11:33:28Z
+Storage Type            raft
+Cluster Name            vault-cluster-6930a56a
+Cluster ID              3ae6672d-a2b0-8eec-9e10-e0f12aefd1e1
+HA Enabled              true
+HA Cluster              https://vault-0.vault-internal:8201
+HA Mode                 active
+Active Since            2024-01-22T07:28:21.853806523Z
+Raft Committed Index    82
+Raft Applied Index      82
+[user@redos lab-13]$ 
+```
+
+Теперь у нас есть работающий кластер из 3 узлов с включенным TLS на уровне pod. Затем мы создадим секрет и получим его с помощью вызова API, чтобы подтвердить, что TLS работает должным образом.
+
+#### Создание секрета
+
+1. Запустим сеанс интерактивной командной строки в поде vault-0:
+```bash
+kubectl exec -n $VAULT_K8S_NAMESPACE -it vault-0 -- /bin/sh
+```
+
+```
+[user@redos lab-13]$ kubectl exec -n $VAULT_K8S_NAMESPACE -it vault-0 -- /bin/sh
+/ $ 
+```
+
+Наше системное приглашение заменено новым '/ $'.
+
+2. Включим движок секретов kv-v2:
+```bash
+vault secrets enable -path=secret kv-v2
+```
+
+```
+/ $ vault secrets enable -path=secret kv-v2
+Success! Enabled the kv-v2 secrets engine at: secret/
+/ $ 
+```
+
+3. Создадим секрет на пути secret/tls/apitest с помощью username и password:
+```bash
+vault kv put secret/tls/apitest username="apiuser" password="supersecret@Otus1234"
+```
+
+```
+/ $ vault kv put secret/tls/apitest username="apiuser" password="supersecret@Otu
+s1234"
+===== Secret Path =====
+secret/data/tls/apitest
+
+======= Metadata =======
+Key                Value
+---                -----
+created_time       2024-01-22T07:53:40.634755447Z
+custom_metadata    <nil>
+deletion_time      n/a
+destroyed          false
+version            1
+/ $ 
+```
+
+4. Убедимся, что секрет указан в пути secret/tls/apitest:
+```bash
+vault kv get secret/tls/apitest
+```
+
+```
+/ $ vault kv get secret/tls/apitest
+===== Secret Path =====
+secret/data/tls/apitest
+
+======= Metadata =======
+Key                Value
+---                -----
+created_time       2024-01-22T07:53:40.634755447Z
+custom_metadata    <nil>
+deletion_time      n/a
+destroyed          false
+version            1
+
+====== Data ======
+Key         Value
+---         -----
+password    supersecret@Otus1234
+username    apiuser
+/ $ 
+```
+
+5. Выходим из пода vault-0:
+```bash
+exit
+```
+
+```
+/ $ exit
+[user@redos lab-13]$ 
+```
+
+#### Создание сервиса и получение секрета через API
+
+В Helm-схеме определен сервис Kubernetes с именем vault, который пересылает запросы своим конечным точкам (т.е. подам с именами vault-0, vault-1 и vault-2).
+
+1. Конфигурация сервиса 'vault':
+```bash
+kubectl -n $VAULT_K8S_NAMESPACE get service vault
+```
+
+```
+[user@redos lab-13]$ kubectl -n $VAULT_K8S_NAMESPACE get service vault
+NAME    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)             AGE
+vault   ClusterIP   10.96.172.198   <none>        8200/TCP,8201/TCP   51m
+[user@redos lab-13]$ 
+```
+
+2. В другом терминале пробросим порт 8200 сервиса 'vault':
+```bash
+kubectl -n vault port-forward service/vault 8200:8200
+```
+
+```
+[user@redos lab-13]$ kubectl -n vault port-forward service/vault 8200:8200
+Forwarding from 127.0.0.1:8200 -> 8200
+```
+
+3. В исходном терминале выполним HTTPS запрос curl для извлечения секрета, созданного нами ранее:
+```bash
+curl --cacert $WORKDIR/vault.ca \
+  --header "X-Vault-Token: $CLUSTER_ROOT_TOKEN" \
+  https://127.0.0.1:8200/v1/secret/data/tls/apitest | jq .data.data
+```
+
+```
+[user@redos lab-13]$ curl --cacert $WORKDIR/vault.ca \
+  --header "X-Vault-Token: $CLUSTER_ROOT_TOKEN" \
+  https://127.0.0.1:8200/v1/secret/data/tls/apitest | jq .data.data
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   356  100   356    0     0   3128      0 --:--:-- --:--:-- --:--:--  3150
+{
+  "password": "supersecret@Otus1234",
+  "username": "apiuser"
+}
+[user@redos lab-13]$ 
+```
+
+Таким образом, мы получили секрет, созданный нами ранее.
 
 
+#### Удаление стенда
 
-
-helm install consul ./consul-helm/
-helm install vault ./vault-helm/
-
-kubectl exec -it vault-0 -- vault operator init --key-shares=5 --key-threshold=3
-
-Unseal Key 1: hSUclB2HR1F471aGDEQ6ApXYBmr6Llcq4bXLDvvUj+Zv
-Unseal Key 2: o7LBS/v3shu1nelrSTLTNDXLun8BOSHY61FHyGZBb7aN
-Unseal Key 3: fWNj4Mrd8jO6oQsySfrCEE2j2sU9apPk1xpRuXD/akTI
-Unseal Key 4: kgxXh91NxWL1gtagwOTGrdP/hJvkYLzSZJ60YqNc5Frm
-Unseal Key 5: odkypq22mJRawJhrET6HD42sJJ0CsTxnQ6KY2TSm0St1
-
-Initial Root Token: hvs.k9pmLkPsDRgqD4nd8MTFpNtk
-
-
-kubectl exec -it vault-0 -- vault operator unseal 'hSUclB2HR1F471aGDEQ6ApXYBmr6Llcq4bXLDvvUj+Zv'
-kubectl exec -it vault-1 -- vault operator unseal 'hSUclB2HR1F471aGDEQ6ApXYBmr6Llcq4bXLDvvUj+Zv'
-kubectl exec -it vault-2 -- vault operator unseal 'hSUclB2HR1F471aGDEQ6ApXYBmr6Llcq4bXLDvvUj+Zv'
-kubectl exec -it vault-0 -- vault operator unseal 'o7LBS/v3shu1nelrSTLTNDXLun8BOSHY61FHyGZBb7aN'
-kubectl exec -it vault-1 -- vault operator unseal 'o7LBS/v3shu1nelrSTLTNDXLun8BOSHY61FHyGZBb7aN'
-kubectl exec -it vault-2 -- vault operator unseal 'o7LBS/v3shu1nelrSTLTNDXLun8BOSHY61FHyGZBb7aN'
-kubectl exec -it vault-0 -- vault operator unseal 'fWNj4Mrd8jO6oQsySfrCEE2j2sU9apPk1xpRuXD/akTI'
-kubectl exec -it vault-1 -- vault operator unseal 'fWNj4Mrd8jO6oQsySfrCEE2j2sU9apPk1xpRuXD/akTI'
-kubectl exec -it vault-2 -- vault operator unseal 'fWNj4Mrd8jO6oQsySfrCEE2j2sU9apPk1xpRuXD/akTI'
-
-kubectl exec -it vault-0 -- vault login
-kubectl exec -it vault-0 -- vault auth list
-
-kubectl exec -it vault-0 -- vault secrets enable --version=2 --path=otus kv
-kubectl exec -it vault-0 -- vault secrets list --detailed
-kubectl exec -it vault-0 -- vault kv put otus/otus-ro/config username='otus' password='h7sgm4j9ztp'
-kubectl exec -it vault-0 -- vault kv put otus/otus-rw/config username='otus' password='h7sgm4j9ztp'
-
-kubectl exec -it vault-0 -- vault kv put secret/myapp/config username='appuser' password='suP3rsec(et!' ttl='30s'
-
-
-
-kubectl exec -it vault-0 -- vault read otus/otus-ro/config
-kubectl exec -it vault-0 -- vault kv get otus/otus-rw/config
-
-kubectl exec -it vault-0 -- vault auth enable kubernetes
-kubectl exec -it vault-0 -- vault auth list
-
-kubectl apply -f ./vault-auth-service-account.yml
-
-kubectl apply --filename vault-auth-secret.yaml
-
-export VAULT_SA_NAME=$(kubectl get sa vault-auth -o jsonpath="{.secrets[*]['name']}")
-- alternative: export VAULT_SA_NAME=$(kubectl get secrets --output=json \
-    | jq -r '.items[].metadata | select(.name|startswith("vault-auth-")).name')
-
-export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data.token}" | base64 --decode; echo)
-export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME -o 'go-template={{ .data.token }}' | base64 --decode)
-
-export SA_CA_CRT=$(kubectl get secret $VAULT_SA_NAME -o jsonpath="{.data['ca\.crt']}" | base64 --decode; echo)
-
-
-export K8S_HOST=$(more ~/.kube/config | grep server |awk '/http/ {print $NF}')
-export K8S_HOST=$(kubectl cluster-info | grep 'Kubernetes control plane' | awk '/https/ {print $NF}' | sed 's/\x1b\[[0-9;]*m//g' )
-
-kubectl exec -it vault-0 -- vault write auth/kubernetes/config token_reviewer_jwt="$SA_JWT_TOKEN" kubernetes_host="$K8S_HOST" kubernetes_ca_cert="$SA_CA_CRT"
-
-kubectl cp otus-policy.hcl vault-0:/tmp/
-kubectl exec -it vault-0 -- vault policy write otus-policy /tmp/otus-policy.hcl
-
-kubectl exec -it vault-0 -- \
-     vault write auth/kubernetes/role/otus \
-     bound_service_account_names=vault-auth \
-     bound_service_account_namespaces=default \
-     token_policies=otus-policy  \
-     ttl=24h
-
-cd ./vault-guides/identity/vault-agent-k8s-demo
-kubectl create -f ./configmap.yaml
-kubectl get configmap example-vault-agent-config -o yaml
-kubectl apply -f ./example-k8s-spec.yaml --record
-
-kubectl get pods
-
-kubectl describe pods vault-agent-example
-
-kubectl logs vault-agent-example
-
-kubectl get cm
-
-kubectl describe cm example-vault-agent-config
-
-cd ~/otus/lab-13/
+Удалить развернутый стенд командой:
+```
 terraform destroy -auto-approve
-
+```
