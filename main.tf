@@ -15,16 +15,16 @@ locals {
   subnet_name  = "labsubnet"
 }
 
-#resource "yandex_resourcemanager_folder" "folders" {
-#  for_each = local.folders
-#  name     = each.key
-#  cloud_id = var.cloud_id
-#}
+resource "yandex_resourcemanager_folder" "folders" {
+  for_each = local.folders
+  name     = each.key
+  cloud_id = var.cloud_id
+}
 
 resource "yandex_kubernetes_cluster" "k8s-lab" {
   name        = "k8s-lab"
   description = "My Kubernetes Cluster"
-  #folder_id   = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id   = yandex_resourcemanager_folder.folders["labfolder"].id
   network_id  = yandex_vpc_network.labnet.id
   master {
     version = local.k8s_version
@@ -61,12 +61,12 @@ resource "yandex_kubernetes_cluster" "k8s-lab" {
 
 resource "yandex_vpc_network" "labnet" {
   name      = local.vpc_name
-  #folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
 }
 
 resource "yandex_vpc_subnet" "labsubnet" {
   name           = local.subnet_name
-  #folder_id      = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id      = yandex_resourcemanager_folder.folders["labfolder"].id
   v4_cidr_blocks = local.subnet_cidrs
   zone           = var.zone
   network_id     = yandex_vpc_network.labnet.id
@@ -75,13 +75,13 @@ resource "yandex_vpc_subnet" "labsubnet" {
 
 resource "yandex_vpc_gateway" "nat_gateway" {
   name      = "default-gateway"
-  #folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
   shared_egress_gateway {}
 }
 
 resource "yandex_vpc_route_table" "rt" {
   name       = "main-route-table"
-  #folder_id  = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id  = yandex_resourcemanager_folder.folders["labfolder"].id
   network_id = yandex_vpc_network.labnet.id
 
   static_route {
@@ -93,40 +93,40 @@ resource "yandex_vpc_route_table" "rt" {
 resource "yandex_iam_service_account" "sergsha" {
   name        = local.sa_name
   description = "K8S zonal service account"
-  #folder_id  = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id  = yandex_resourcemanager_folder.folders["labfolder"].id
 }
 
 resource "yandex_resourcemanager_folder_iam_member" "editor" {
   # Сервисному аккаунту назначается роль "editor".
-  #folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
-  folder_id = var.folder_id
+  folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
+  #folder_id = var.folder_id
   role      = "editor"
   member    = "serviceAccount:${yandex_iam_service_account.sergsha.id}"
 }
 /*
 resource "yandex_resourcemanager_folder_iam_member" "k8s-clusters-agent" {
   # Сервисному аккаунту назначается роль "k8s.clusters.agent".
-  #folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
   role      = "k8s.clusters.agent"
   member    = "serviceAccount:${yandex_iam_service_account.sergsha.id}"
 }
 
 resource "yandex_resourcemanager_folder_iam_member" "vpc-public-admin" {
   # Сервисному аккаунту назначается роль "vpc.publicAdmin".
-  #folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
   role      = "vpc.publicAdmin"
   member    = "serviceAccount:${yandex_iam_service_account.sergsha.id}"
 }
 
 resource "yandex_resourcemanager_folder_iam_member" "images-puller" {
   # Сервисному аккаунту назначается роль "container-registry.images.puller".
-  #folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
   role      = "container-registry.images.puller"
   member    = "serviceAccount:${yandex_iam_service_account.sergsha.id}"
 }
 
 resource "yandex_resourcemanager_folder_iam_member" "viewer" {
-  #folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
   role      = "viewer"
   member    = "serviceAccount:${yandex_iam_service_account.sergsha.id}"
 }
@@ -141,7 +141,7 @@ resource "yandex_kms_symmetric_key" "kms-key" {
 resource "yandex_vpc_security_group" "k8s-public-services" {
   name        = "k8s-public-services"
   description = "Правила группы разрешают подключение к сервисам из интернета. Примените правила только для групп узлов."
-  #folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
+  folder_id = yandex_resourcemanager_folder.folders["labfolder"].id
   network_id  = yandex_vpc_network.labnet.id
   ingress {
     protocol          = "TCP"
